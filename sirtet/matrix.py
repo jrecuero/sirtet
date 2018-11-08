@@ -12,6 +12,12 @@ class Cell:
     def match(self) -> bool:
         pass
 
+    def update_with(self, other: 'Cell') -> None:
+        self._content = other._content
+
+    def clone(self) -> 'Cell':
+        pass
+
     def __str__(self) -> str:
         pass
 
@@ -27,7 +33,16 @@ class Int(Cell):
     def collision(self, other: Cell) -> bool:
         return self.match() and other.match()
 
+    def update_with(self, other: 'Cell') -> None:
+        if self._content == 0:
+            self._content = other._content
+
+    def clone(self) -> 'Cell':
+        return Int(self._content)
+
     def __str__(self) -> str:
+        if self._content == 0:
+            return ' '
         return str(self._content)
 
 
@@ -91,13 +106,13 @@ class Matrix:
         return collisions
 
     def is_collision_with(self, mat: Mat) -> bool:
-        return self.get_collisions_with(mat) != 0
+        return len(self.get_collisions_with(mat)) != 0
 
     def is_bottom_collision_with(self, mat: Mat) -> bool:
         collisions = self.get_collisions_with(mat)
-        m = len(self.mat[0])
+        m = len(self.mat)
         for entry in collisions:
-            if entry[0] == m:
+            if entry[0] == (m - 1):
                 return True
         return False
 
@@ -112,13 +127,13 @@ class Point:
         self.y = y
 
     def move_left(self) -> 'Point':
-        return Point(self.x - 1, self.y)
+        return Point(self.x, self.y - 1)
 
     def move_right(self) -> 'Point':
-        return Point(self.x + 1, self.y)
+        return Point(self.x, self.y + 1)
 
     def move_down(self) -> 'Point':
-        return Point(self.x, self.y + 1)
+        return Point(self.x + 1, self.y)
 
 
 class Board:
@@ -130,22 +145,41 @@ class Board:
         self.arena_length = 18
         self.board_width = self.arena_width + 2
         self.board_length = self.arena_length + 1
-        self._cell_empty = Int(0)
-        self._cell_border = Int(1)
+
+    def new_cell_empty(self) -> Cell:
+        return Int(0)
+
+    def new_cell_border(self) -> Cell:
+        return Int(1)
 
     def _new_row(self) -> List[Cell]:
         row: List[Cell] = []
-        row.append(self._cell_border)
+        row.append(self.new_cell_border())
         for _ in range(self.arena_width):
-            row.append(self._cell_empty)
-        row.append(self._cell_border)
+            row.append(self.new_cell_empty())
+        row.append(self.new_cell_border())
         return row
 
-    def _new_base_row(self) -> List[Cell]:
+    def _new_bottom_row(self) -> List[Cell]:
         row: List[Cell] = []
         for _ in range(self.board_width):
-            row.append(self._cell_border)
+            row.append(self.new_cell_border())
         return row
+
+    def new_clean_mat(self) -> Mat:
+        mat = Mat([])
+        for _ in range(self.board_length - 1):
+            mat.append(self._new_row())
+        mat.append(self._new_bottom_row())
+        return mat
+
+    def clone(self) -> 'Board':
+        b = Board()
+        for x in range(self.board_length):
+            b.mat.append([])
+            for y in range(self.board_width):
+                b.mat[x].append(self.mat[x][y].clone())
+        return b
 
     def get_mat(self) -> Mat:
         return self.mat
@@ -166,7 +200,14 @@ class Board:
         x, y = pos.x, pos.y
         for xi, row in enumerate(mat.get_mat()):
             for yi, col in enumerate(row):
-                self.mat[x + xi][y + yi] = col
+                # self.mat[x + xi][y + yi] = col
+                self.mat[x + xi][y + yi].update_with(col)
+
+    def clear_with_matrix_at(self, mat: Matrix, pos: Point) -> None:
+        x, y = pos.x, pos.y
+        for xi, row in enumerate(mat.get_mat()):
+            for yi, col in enumerate(row):
+                self.mat[x + xi][y + yi] = self.new_cell_empty()
 
     def check_for_match_row_at(self, row: int) -> bool:
         # arena for matching rows does not include board borders.
@@ -184,7 +225,7 @@ class Board:
 
     def remove_rows(self, irows: List[int]) -> None:
         result = Mat([])
-        result.append(self._new_base_row())
+        result.append(self._new_bottom_row())
         for irow, row in enumerate(self.mat):
             if irow not in irows:
                 result.append(row)
@@ -212,7 +253,7 @@ class Piece:
         return self.pos.move_down()
 
     def rotate_clockwise(self) -> Matrix:
-        return self.matrix.rotate_clockwise
+        return self.matrix.rotate_clockwise()
 
     def rotate_anticlockwise(self) -> Matrix:
         return self.matrix.rotate_anticlockwise()
@@ -223,11 +264,19 @@ class BoardHandler:
     def __init__(self):
         self.board = None
         self.piece = None
+        self.start_pos: Point
 
-    def _piece_move(self, new_pos: Point) -> None:
+    def set_new_piece_at(self, mat: Matrix, pos: Point=None) -> None:
+        self.piece.matrix = mat
+        self.piece.pos = pos if pos else self.start_pos
+
+    def _piece_move(self, new_pos: Point) -> bool:
         board_mat = self.board.get_matrix_at(new_pos)
-        if not self.piece.matrix.is_collision_with(board_mat):
+        if not self.piece.matrix.is_collision_with(board_mat.mat):
             self.piece.pos = new_pos
+        elif self.piece.matrix.is_bottom_collision_with(board_mat.mat):
+            return True
+        return False
 
     def piece_move_left(self) -> None:
         new_pos = self.piece.move_left()
@@ -237,13 +286,16 @@ class BoardHandler:
         new_pos = self.piece.move_right()
         self._piece_move(new_pos)
 
-    def piece_move_down(self) -> None:
+    def piece_move_down(self) -> bool:
         new_pos = self.piece.move_down()
-        self._piece_move(new_pos)
+        bottomed = self._piece_move(new_pos)
+        if bottomed:
+            self.board.update_with_matrix_at(self.piece.matrix, self.piece.pos)
+        return bottomed
 
     def _piece_rotate(self, new_mat: Matrix) -> None:
         board_mat = self.board.get_matrix_at(self.piece.pos)
-        if not new_mat.is_collision_with(board_mat):
+        if not new_mat.is_collision_with(board_mat.mat):
             self.piece.matrix = new_mat
 
     def piece_rotate_clockwise(self) -> None:
@@ -254,39 +306,63 @@ class BoardHandler:
         new_mat = self.piece.rotate_anticlockwise()
         self._piece_rotate(new_mat)
 
+    def setup(self, start_pos: Point) -> 'BoardHandler':
+        self.board = Board()
+        self.board.set_mat(self.board.new_clean_mat())
+        self.piece = Piece()
+        self.start_pos = start_pos
+        return self
+
+    def render_to(self) -> Board:
+        b = self.board.clone()
+        if self.piece.pos:
+            b.update_with_matrix_at(self.piece.matrix, self.piece.pos)
+        return b
+
 
 if __name__ == "__main__":
-    six: Mat = Mat([[Int(0), Int(0), Int(0)],
-                    [Int(1), Int(1), Int(0)],
-                    [Int(0), Int(1), Int(1)], ])
-    mat: Matrix = Matrix(six)
-    print(mat)
-    for x in range(4):
-        mat.set_mat(mat.rotate_clockwise().get_mat())
-        print()
-        print(mat)
+    mats: List[Mat] = [Mat([[Int(0), Int(0), Int(0)],
+                            [Int(1), Int(1), Int(0)],
+                            [Int(0), Int(1), Int(1)], ]),
+                       Mat([[Int(0), Int(0), Int(0)],
+                            [Int(0), Int(1), Int(1)],
+                            [Int(1), Int(1), Int(0)], ]),
+                       Mat([[Int(1), Int(0), Int(0)],
+                            [Int(1), Int(0), Int(0)],
+                            [Int(1), Int(1), Int(0)], ]),
+                       Mat([[Int(0), Int(0), Int(1)],
+                            [Int(0), Int(0), Int(1)],
+                            [Int(0), Int(1), Int(1)], ]),
+                       Mat([[Int(0), Int(1), Int(0)],
+                            [Int(0), Int(1), Int(0)],
+                            [Int(0), Int(1), Int(0)], ]), ]
 
-    def _create_board(length) -> Mat:
-        line: List[Cell] = [Int(1), Int(0), Int(0), Int(0), Int(0), Int(0), Int(0), Int(0), Int(0), Int(0), Int(1)]
-        bottom: List[Cell] = [Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1), Int(1)]
-        board: Mat = Mat([line[:] for x in range(length - 1)])
-        board.append(bottom)
-        return board
+    # mat: Matrix = Matrix(mats[0])
+    # print(mat)
+    # for x in range(4):
+    #     mat.set_mat(mat.rotate_clockwise().get_mat())
+    #     print()
+    #     print(mat)
 
-    print()
-    board = Board()
-    board.set_mat(_create_board(board.board_length))
-    print(board)
-
-    print()
-    print(board.get_matrix_at(Point(16, 8)))
-
-    print()
-    print(mat)
-    board.update_with_matrix_at(mat, Point(1, 1))
-    print(board)
-
+    bh: BoardHandler = BoardHandler()
+    bh.setup(Point(0, 1))
+    index: int = 0
+    bottomed: bool = True
     while True:
-        key = input('Enter: ')
-        if key.lower() == 'q':
+        if bottomed:
+            bh.set_new_piece_at(Matrix(mats[index]))
+            index = (index + 1) % len(mats)
+            bottomed = False
+        print()
+        print(bh.render_to())
+        key = input('Enter: ').lower()
+        if key == 'q':
             exit(0)
+        elif key == '':
+            bottomed = bh.piece_move_down()
+        elif key == 'a':
+            bh.piece_move_left()
+            bottomed = bh.piece_move_down()
+        elif key == 's':
+            bh.piece_move_right()
+            bottomed = bh.piece_move_down()
