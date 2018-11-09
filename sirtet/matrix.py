@@ -7,19 +7,19 @@ class Cell:
         self._content = content
 
     def collision(self, other: 'Cell') -> bool:
-        pass
+        return False
 
     def match(self) -> bool:
-        pass
+        return False
 
     def update_with(self, other: 'Cell') -> None:
         self._content = other._content
 
     def clone(self) -> 'Cell':
-        pass
+        return Cell(self._content)
 
     def __str__(self) -> str:
-        pass
+        return str(self._content)
 
 
 class Int(Cell):
@@ -42,9 +42,28 @@ class Int(Cell):
 
     def __str__(self) -> str:
         if self._content == 0:
-            return ' '
+            return '.'
         # return str(self._content)
-        return chr(9608)
+        # return chr(9608)
+        return chr(9209)
+
+
+class Segment(Int):
+
+    def __init__(self, content: Any):
+        super(Segment, self).__init__(content)
+
+    def clone(self) -> 'Cell':
+        return Segment(self._content)
+
+    def __str__(self) -> str:
+        if self._content == 0:
+            return '.'
+        # return str(self._content)
+        # return chr(9209)
+        # return chr(9210)
+        # return chr(9208)
+        return chr(12872)
 
 
 Mat = NewType('Mat', List[List[Cell]])
@@ -201,8 +220,9 @@ class Board:
         x, y = pos.x, pos.y
         for xi, row in enumerate(mat.get_mat()):
             for yi, col in enumerate(row):
-                # self.mat[x + xi][y + yi] = col
-                self.mat[x + xi][y + yi].update_with(col)
+                if not self.mat[x + xi][y + yi].match():
+                    self.mat[x + xi][y + yi] = col
+                # self.mat[x + xi][y + yi].update_with(col)
 
     def clear_with_matrix_at(self, mat: Matrix, pos: Point) -> None:
         x, y = pos.x, pos.y
@@ -372,21 +392,21 @@ class BoardHandler:
 
 
 if __name__ == "__main__":
-    mats: List[Mat] = [Mat([[Int(0), Int(0), Int(0)],
-                            [Int(1), Int(1), Int(0)],
-                            [Int(0), Int(1), Int(1)], ]),
-                       Mat([[Int(0), Int(0), Int(0)],
-                            [Int(0), Int(1), Int(1)],
-                            [Int(1), Int(1), Int(0)], ]),
-                       Mat([[Int(1), Int(0), Int(0)],
-                            [Int(1), Int(0), Int(0)],
-                            [Int(1), Int(1), Int(0)], ]),
-                       Mat([[Int(0), Int(0), Int(1)],
-                            [Int(0), Int(0), Int(1)],
-                            [Int(0), Int(1), Int(1)], ]),
-                       Mat([[Int(0), Int(1), Int(0)],
-                            [Int(0), Int(1), Int(0)],
-                            [Int(0), Int(1), Int(0)], ]), ]
+    mats: List[Mat] = [Mat([[Segment(0), Segment(0), Segment(0)],
+                            [Segment(1), Segment(1), Segment(0)],
+                            [Segment(0), Segment(1), Segment(1)], ]),
+                       Mat([[Segment(0), Segment(0), Segment(0)],
+                            [Segment(0), Segment(1), Segment(1)],
+                            [Segment(1), Segment(1), Segment(0)], ]),
+                       Mat([[Segment(1), Segment(0), Segment(0)],
+                            [Segment(1), Segment(0), Segment(0)],
+                            [Segment(1), Segment(1), Segment(0)], ]),
+                       Mat([[Segment(0), Segment(0), Segment(1)],
+                            [Segment(0), Segment(0), Segment(1)],
+                            [Segment(0), Segment(1), Segment(1)], ]),
+                       Mat([[Segment(0), Segment(1), Segment(0)],
+                            [Segment(0), Segment(1), Segment(0)],
+                            [Segment(0), Segment(1), Segment(0)], ]), ]
 
     bh: BoardHandler = BoardHandler()
     bh.setup(mats, Point(0, 1))
