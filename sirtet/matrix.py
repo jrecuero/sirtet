@@ -43,7 +43,8 @@ class Int(Cell):
     def __str__(self) -> str:
         if self._content == 0:
             return ' '
-        return str(self._content)
+        # return str(self._content)
+        return chr(9608)
 
 
 Mat = NewType('Mat', List[List[Cell]])
@@ -142,9 +143,9 @@ class Board:
         self.mat = mat if mat else Mat([])
         self.piece_size = 3
         self.arena_width  = 9
-        self.arena_length = 18
+        self.arena_height = 18
         self.board_width = self.arena_width + 2
-        self.board_length = self.arena_length + 1
+        self.board_height = self.arena_height + 1
 
     def new_cell_empty(self) -> Cell:
         return Int(0)
@@ -168,14 +169,14 @@ class Board:
 
     def new_clean_mat(self) -> Mat:
         mat = Mat([])
-        for _ in range(self.board_length - 1):
+        for _ in range(self.board_height - 1):
             mat.append(self._new_row())
         mat.append(self._new_bottom_row())
         return mat
 
     def clone(self) -> 'Board':
         b = Board()
-        for x in range(self.board_length):
+        for x in range(self.board_height):
             b.mat.append([])
             for y in range(self.board_width):
                 b.mat[x].append(self.mat[x][y].clone())
@@ -185,7 +186,7 @@ class Board:
         return self.mat
 
     def set_mat(self, mat: Mat) -> None:
-        if len(mat) != self.board_length or len(mat[0]) != self.board_width:
+        if len(mat) != self.board_height or len(mat[0]) != self.board_width:
             assert False, 'board wrong matrix dimension: ({}, {})'.format(len(mat), len(mat) and len(mat[0]))
         self.mat = mat
 
@@ -218,23 +219,25 @@ class Board:
 
     def check_for_match_row(self) -> List[int]:
         result: List[int] = []
-        for irow in range(self.board_length):
+        for irow in range(self.board_height - 1):
             if self.check_for_match_row_at(irow):
                 result.append(irow)
         return result
 
     def remove_rows(self, irows: List[int]) -> None:
         result = Mat([])
-        result.append(self._new_bottom_row())
+        for _ in range(len(irows)):
+            result.append(self._new_row())
         for irow, row in enumerate(self.mat):
             if irow not in irows:
                 result.append(row)
-        for _ in range(self.arena_length - len(result)):
-            result.append(self._new_row())
         self.set_mat(result)
 
     def __str__(self) -> str:
         return '\n'.join([' '.join(str(_) for _ in row) for row in self.mat])
+
+
+BH_Event = NewType('BH_Event', int)
 
 
 class Piece:
@@ -261,22 +264,40 @@ class Piece:
 
 class BoardHandler:
 
+    MOVE_DOWN = BH_Event(1)
+    MOVE_LEFT = BH_Event(2)
+    MOVE_RIGHT = BH_Event(3)
+    ROTATE_CLOCK = BH_Event(4)
+    ROTATE_ANTICLOCK = BH_Event(5)
+
     def __init__(self):
         self.board = None
         self.piece = None
         self.start_pos: Point
+        self.mats: List[Mat]
+        self.__mat_index: int = 0
+
+    def new_piece_at(self, pos: Point=None) -> None:
+        self.set_new_piece_at(Matrix(self.mats[self.__mat_index]))
+        self.__mat_index = (self.__mat_index + 1) % len(self.mats)
 
     def set_new_piece_at(self, mat: Matrix, pos: Point=None) -> None:
         self.piece.matrix = mat
         self.piece.pos = pos if pos else self.start_pos
 
+    def _check_pos(self, new_pos: Point) -> bool:
+        x, y = new_pos.x, new_pos.y
+        x_boundary = self.board.board_height - self.board.piece_size
+        y_boundary = self.board.board_width - self.board.piece_size
+        return (0 <= x <= x_boundary) and (0 <= y <= y_boundary)
+
     def _piece_move(self, new_pos: Point) -> bool:
-        board_mat = self.board.get_matrix_at(new_pos)
-        if not self.piece.matrix.is_collision_with(board_mat.mat):
-            self.piece.pos = new_pos
-        elif self.piece.matrix.is_bottom_collision_with(board_mat.mat):
-            return True
-        return False
+        if self._check_pos(new_pos):
+            board_mat = self.board.get_matrix_at(new_pos)
+            if not self.piece.matrix.is_collision_with(board_mat.mat):
+                self.piece.pos = new_pos
+                return False
+        return True
 
     def piece_move_left(self) -> None:
         new_pos = self.piece.move_left()
@@ -306,12 +327,36 @@ class BoardHandler:
         new_mat = self.piece.rotate_anticlockwise()
         self._piece_rotate(new_mat)
 
-    def setup(self, start_pos: Point) -> 'BoardHandler':
+    def setup(self, mats: List[Mat], start_pos: Point) -> 'BoardHandler':
         self.board = Board()
         self.board.set_mat(self.board.new_clean_mat())
         self.piece = Piece()
         self.start_pos = start_pos
+        self.mats = mats
         return self
+
+    def event_handler(self, event: BH_Event):
+        bottomed: bool = False
+        if event == BoardHandler.MOVE_DOWN:
+            bottomed = self.piece_move_down()
+        elif event == BoardHandler.MOVE_LEFT:
+            self.piece_move_left()
+            bottomed = self.piece_move_down()
+        elif event == BoardHandler.MOVE_RIGHT:
+            self.piece_move_right()
+            bottomed = self.piece_move_down()
+        elif event == BoardHandler.ROTATE_CLOCK:
+            self.piece_rotate_clockwise()
+            bottomed = self.piece_move_down()
+        elif event == BoardHandler.ROTATE_ANTICLOCK:
+            self.piece_rotate_anticlockwise()
+            bottomed = self.piece_move_down()
+        if bottomed:
+            matched_rows = self.board.check_for_match_row()
+            if matched_rows:
+                self.board.remove_rows(matched_rows)
+            self.new_piece_at()
+        return bottomed
 
     def render_to(self) -> Board:
         b = self.board.clone()
@@ -337,32 +382,22 @@ if __name__ == "__main__":
                             [Int(0), Int(1), Int(0)],
                             [Int(0), Int(1), Int(0)], ]), ]
 
-    # mat: Matrix = Matrix(mats[0])
-    # print(mat)
-    # for x in range(4):
-    #     mat.set_mat(mat.rotate_clockwise().get_mat())
-    #     print()
-    #     print(mat)
-
     bh: BoardHandler = BoardHandler()
-    bh.setup(Point(0, 1))
-    index: int = 0
-    bottomed: bool = True
+    bh.setup(mats, Point(0, 1))
+    bh.new_piece_at()
     while True:
-        if bottomed:
-            bh.set_new_piece_at(Matrix(mats[index]))
-            index = (index + 1) % len(mats)
-            bottomed = False
         print()
         print(bh.render_to())
         key = input('Enter: ').lower()
-        if key == 'q':
+        if key == 'x':
             exit(0)
         elif key == '':
-            bottomed = bh.piece_move_down()
+            bh.event_handler(BoardHandler.MOVE_DOWN)
         elif key == 'a':
-            bh.piece_move_left()
-            bottomed = bh.piece_move_down()
+            bh.event_handler(BoardHandler.MOVE_LEFT)
         elif key == 's':
-            bh.piece_move_right()
-            bottomed = bh.piece_move_down()
+            bh.event_handler(BoardHandler.MOVE_RIGHT)
+        elif key == 'q':
+            bh.event_handler(BoardHandler.ROTATE_ANTICLOCK)
+        elif key == 'w':
+            bh.event_handler(BoardHandler.ROTATE_CLOCK)
