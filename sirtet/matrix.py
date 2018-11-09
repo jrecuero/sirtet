@@ -278,12 +278,18 @@ class BoardHandler:
         self.__mat_index: int = 0
 
     def new_piece_at(self, pos: Point=None) -> None:
-        self.set_new_piece_at(Matrix(self.mats[self.__mat_index]))
+        pos = pos if pos else self.start_pos
+        self.set_new_piece_at(Matrix(self.mats[self.__mat_index]), pos)
         self.__mat_index = (self.__mat_index + 1) % len(self.mats)
+        # Check if there is any collision with the new piece.
+        board_mat = self.board.get_matrix_at(pos)
+        if self.piece.matrix.is_collision_with(board_mat.mat):
+            print('GAME OVER')
+            exit(0)
 
-    def set_new_piece_at(self, mat: Matrix, pos: Point=None) -> None:
+    def set_new_piece_at(self, mat: Matrix, pos: Point) -> None:
         self.piece.matrix = mat
-        self.piece.pos = pos if pos else self.start_pos
+        self.piece.pos = pos
 
     def _check_pos(self, new_pos: Point) -> bool:
         x, y = new_pos.x, new_pos.y
