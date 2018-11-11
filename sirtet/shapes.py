@@ -1,15 +1,13 @@
 import random
 from typing import List, Callable, Union
-from sirtet.cell import Cell, Segment
+from sirtet.cell import Cell
 from sirtet.matrix import Mat, Matrix
 
 
 class Shapes:
 
-    # def __init__(self, cell_klass: Callable[..., Cell]=None):
-    #     self.cell: Union[Callable[..., Any], Segment] = cell_klass if cell_klass is not None else Segment
-    def __init__(self, cell_klass=None):
-        self.cell = cell_klass if cell_klass is not None else Segment
+    def __init__(self, cell_klass: Callable[..., Cell]):
+        self.cell: Callable[..., Cell] = cell_klass
         self._shapes: List[Callable[[], Mat]] = [lambda: Mat([[self.cell(0), self.cell(0), self.cell(0)],
                                                               [self.cell(1), self.cell(1), self.cell(0)],
                                                               [self.cell(0), self.cell(1), self.cell(1)], ]),
@@ -99,15 +97,16 @@ class Shapes:
 
 class Generator:
 
-    def __init__(self):
-        self.shapes: Shapes = Shapes()
+    def __init__(self, cell_klass: Callable[..., Cell]):
+        self.shapes: Shapes = Shapes(cell_klass)
 
     def get_next(self) -> Matrix:
         return Matrix(self.shapes.get())
 
 
-if __name__ == '__main__':
-    s = Shapes()
-    for x in s._shapes:
-        print(Matrix(x()))
-        print()
+# if __name__ == '__main__':
+#     from sirtet.assets.cells import Segment
+#     s = Shapes(Segment)
+#     for x in s._shapes:
+#         print(Matrix(x()))
+#         print()

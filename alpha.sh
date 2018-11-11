@@ -2,5 +2,5 @@
 
 export PYTHONPATH_SAVE=$PYTHONPATH
 export PYTHONPATH=.
-python sirtet/main.py
+python apps/alpha/main.py
 export PYTHONPATH=$PYTHONPATH_SAVE

@@ -68,7 +68,7 @@ class Board:
         x, y = pos.x, pos.y
         for xi, row in enumerate(mat.get_mat()):
             for yi, col in enumerate(row):
-                if not self.mat[x + xi][y + yi].match():
+                if not self.mat[x + xi][y + yi].match() and col.match():
                     self.mat[x + xi][y + yi] = col
                 # self.mat[x + xi][y + yi].update_with(col)
 
