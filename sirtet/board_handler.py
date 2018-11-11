@@ -1,8 +1,9 @@
-from typing import List, NewType
+from typing import NewType
 from sirtet.point import Point
 from sirtet.board import Board
-from sirtet.matrix import Mat, Matrix
+from sirtet.matrix import Matrix
 from sirtet.piece import Piece
+from sirtet.shapes import Generator
 
 
 BH_Event = NewType('BH_Event', int)
@@ -20,13 +21,11 @@ class BoardHandler:
         self.board = None
         self.piece = None
         self.start_pos: Point
-        self.mats: List[Mat]
-        self.__mat_index: int = 0
+        self.generator: Generator
 
     def new_piece_at(self, pos: Point=None) -> None:
         pos = pos if pos else self.start_pos
-        self.set_new_piece_at(Matrix(self.mats[self.__mat_index]), pos)
-        self.__mat_index = (self.__mat_index + 1) % len(self.mats)
+        self.set_new_piece_at(self.generator.get_next(), pos)
         # Check if there is any collision with the new piece.
         board_mat = self.board.get_matrix_at(pos)
         if self.piece.matrix.is_collision_with(board_mat.mat):
@@ -79,14 +78,14 @@ class BoardHandler:
         new_mat = self.piece.rotate_anticlockwise()
         self._piece_rotate(new_mat)
 
-    def setup(self, board: Board, mats: List[Mat], start_pos: Point) -> 'BoardHandler':
+    def setup(self, board: Board, generator: Generator, start_pos: Point) -> 'BoardHandler':
         self.board = board
         # TODO: This could be moved outside to the module where Board is
         # created.
         self.board.set_mat(self.board.new_clean_mat())
         self.piece = Piece()
         self.start_pos = start_pos
-        self.mats = mats
+        self.generator = generator
         return self
 
     def event_handler(self, event: BH_Event):

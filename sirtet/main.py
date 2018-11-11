@@ -4,6 +4,7 @@ from sirtet.point import Point
 from sirtet.matrix import Mat, Matrix
 from sirtet.piece import Piece
 from sirtet.board import Board
+from sirtet.shapes import Generator
 from sirtet.board_handler import BoardHandler
 
 
@@ -17,26 +18,10 @@ class BoardText(Board):
 
 
 if __name__ == "__main__":
-    mats: List[Mat] = [Mat([[Segment(0), Segment(0), Segment(0)],
-                            [Segment(1), Segment(1), Segment(0)],
-                            [Segment(0), Segment(1), Segment(1)], ]),
-                       Mat([[Segment(0), Segment(0), Segment(0)],
-                            [Segment(0), Segment(1), Segment(1)],
-                            [Segment(1), Segment(1), Segment(0)], ]),
-                       Mat([[Segment(1), Segment(0), Segment(0)],
-                            [Segment(1), Segment(0), Segment(0)],
-                            [Segment(1), Segment(1), Segment(0)], ]),
-                       Mat([[Segment(0), Segment(0), Segment(1)],
-                            [Segment(0), Segment(0), Segment(1)],
-                            [Segment(0), Segment(1), Segment(1)], ]),
-                       Mat([[Segment(0), Segment(1), Segment(0)],
-                            [Segment(0), Segment(1), Segment(0)],
-                            [Segment(0), Segment(1), Segment(0)], ]), ]
-
     bh: BoardHandler = BoardHandler()
     b = BoardText()
     # b.set_mat(self.board.new_clean_mat())
-    bh.setup(b, mats, Point(0, 1))
+    bh.setup(b, Generator(), Point(0, 1))
     bh.new_piece_at()
     while True:
         print()
