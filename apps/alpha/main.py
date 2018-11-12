@@ -8,7 +8,6 @@ from tools.cursor import Cursor
 
 
 class BoardText(Board):
-
     def new_cell_empty(self) -> Cell:
         return Int(0)
 
@@ -27,16 +26,16 @@ if __name__ == "__main__":
         Cursor.print(Cursor.move_upper_left(0))
         print()
         print(bh.render_to())
-        key = input('Enter: ').lower()
-        if key == 'x':
+        key = input("Enter: ").lower()
+        if key == "x":
             exit(0)
-        elif key == '':
+        elif key == "":
             bh.event_handler(BoardHandler.MOVE_DOWN)
-        elif key == 'a':
+        elif key == "a":
             bh.event_handler(BoardHandler.MOVE_LEFT)
-        elif key == 's':
+        elif key == "s":
             bh.event_handler(BoardHandler.MOVE_RIGHT)
-        elif key == 'q':
+        elif key == "q":
             bh.event_handler(BoardHandler.ROTATE_ANTICLOCK)
-        elif key == 'w':
+        elif key == "w":
             bh.event_handler(BoardHandler.ROTATE_CLOCK)

@@ -10,7 +10,7 @@ warning, errors and other information from applications.
 
 """
 
-__docformat__ = 'restructuredtext en'
+__docformat__ = "restructuredtext en"
 
 # -----------------------------------------------------------------------------
 #  _                            _
@@ -29,6 +29,7 @@ import logging
 import logging.handlers
 import logging.config
 import io
+
 # from contextlib import redirect_stdout
 
 #
@@ -46,70 +47,70 @@ import io
 # -----------------------------------------------------------------------------
 #
 
-COL_RESET       = "\x1b[0m"
+COL_RESET = "\x1b[0m"
 """
     :type: string
 
     Clears all colors and styles (to white on black).
 """
 
-BOLD_ON         = "\x1b[1m"
+BOLD_ON = "\x1b[1m"
 """
     :type: string
 
     Bold on.
 """
 
-ITALICS_ON      = "\x1b[3m"
+ITALICS_ON = "\x1b[3m"
 """
     :type: string
 
     Italics on.
 """
 
-UNDERLINE_ON    = "\x1b[4m"
+UNDERLINE_ON = "\x1b[4m"
 """
     :type: string
 
     Underline on.
 """
 
-INVERSE_ON      = "\x1b[7m"
+INVERSE_ON = "\x1b[7m"
 """
     :type: string
 
     Inverse on, reverses foreground & background colors.
 """
 
-STRIKETHRGH_ON  = "\x1b[9m"
+STRIKETHRGH_ON = "\x1b[9m"
 """
     :type: string
 
     Strikethrough on.
 """
 
-BOLD_OFF        = "\x1b[22m"
+BOLD_OFF = "\x1b[22m"
 """
     :type: string
 
     Bold off.
 """
 
-ITALICS_OFF     = "\x1b[23m"
+ITALICS_OFF = "\x1b[23m"
 """
     :type: string
 
     Italics off.
 """
 
-UNDERLINE_OFF   = "\x1b[24m"
+UNDERLINE_OFF = "\x1b[24m"
 """
     :type: string
 
     Underline off.
 """
 
-INVERSE_OFF     = "\x1b[27m"
+INVERSE_OFF = "\x1b[27m"
 """
     :type: string
 
@@ -125,63 +126,63 @@ STRIKETHRGH_OFF = "\x1b[29m"
 
 
 # Foreground colors are in form of 3x, background are 4x
-FG_BLACK    = "\x1b[30m"
+FG_BLACK = "\x1b[30m"
 """
     :type: string
 
     Set foreground color to black.
 """
 
-FG_RED      = "\x1b[31m"
+FG_RED = "\x1b[31m"
 """
     :type: string
 
     Set foreground color to red.
 """
 
-FG_GREEN    = "\x1b[32m"
+FG_GREEN = "\x1b[32m"
 """
     :type: string
 
     Set foreground color to green.
 """
 
-FG_YELLOW   = "\x1b[33m"
+FG_YELLOW = "\x1b[33m"
 """
     :type: string
 
     Set foreground color to yellow.
 """
 
-FG_BLUE     = "\x1b[34m"
+FG_BLUE = "\x1b[34m"
 """
     :type: string
 
     Set foreground color to blue.
 """
 
-FG_MAGENTA  = "\x1b[35m"
+FG_MAGENTA = "\x1b[35m"
 """
     :type: string
 
     Set foreground color to magenta (purple).
 """
 
-FG_CYAN     = "\x1b[36m"
+FG_CYAN = "\x1b[36m"
 """
     :type: string
 
     Set foreground color to cyan.
 """
 
-FG_WHITE    = "\x1b[37m"
+FG_WHITE = "\x1b[37m"
 """
     :type: string
 
     Set foreground color to white.
 """
 
-FG_DEFAULT  = "\x1b[39m"
+FG_DEFAULT = "\x1b[39m"
 """
     :type: string
 
@@ -189,63 +190,63 @@ FG_DEFAULT  = "\x1b[39m"
 """
 
 
-BG_BLACK    = "\x1b[40m"
+BG_BLACK = "\x1b[40m"
 """
     :type: string
 
     Set background color to black.
 """
 
-BG_RED      = "\x1b[41m"
+BG_RED = "\x1b[41m"
 """
     :type: string
 
     Set background color to red.
 """
 
-BG_GREEN    = "\x1b[42m"
+BG_GREEN = "\x1b[42m"
 """
     :type: string
 
     Set background color to green.
 """
 
-BG_YELLOW   = "\x1b[43m"
+BG_YELLOW = "\x1b[43m"
 """
     :type: string
 
     Set background color to yellow.
 """
 
-BG_BLUE     = "\x1b[44m"
+BG_BLUE = "\x1b[44m"
 """
     :type: string
 
     Set background color to blue.
 """
 
-BG_MAGENTA  = "\x1b[45m"
+BG_MAGENTA = "\x1b[45m"
 """
     :type: string
 
     Set background color to magenta (purple).
 """
 
-BG_CYAN     = "\x1b[46m"
+BG_CYAN = "\x1b[46m"
 """
     :type: string
 
     Set background color to cyan.
 """
 
-BG_WHITE    = "\x1b[47m"
+BG_WHITE = "\x1b[47m"
 """
     :type: string
 
     Set background color to white.
 """
 
-BG_DEFAULT  = "\x1b[49m"
+BG_DEFAULT = "\x1b[49m"
 """
     :type: string
 
@@ -317,14 +318,14 @@ class ContextFilter(logging.Filter):
 
     def filter(self, record):
         fr = sys._getframe(8)
-        msg = '{0}::{1}::{2}'.format(os.path.basename(fr.f_code.co_filename),
-                                     fr.f_code.co_name,
-                                     fr.f_lineno)
+        msg = "{0}::{1}::{2}".format(
+            os.path.basename(fr.f_code.co_filename), fr.f_code.co_name, fr.f_lineno
+        )
         record.titular = msg
         if record.levelno == TRACE_LEVEL:
-            record.levelname = 'TRACE'
+            record.levelname = "TRACE"
         elif record.levelno == DISPLAY_LEVEL:
-            record.levelname = 'DISPLAY'
+            record.levelname = "DISPLAY"
         return True
 
 
@@ -339,7 +340,7 @@ class Loggerator(object):
     """
 
     # =========================================================================
-    def __init__(self, name, color, out=sys.stdout, fname='cmd.log'):
+    def __init__(self, name, color, out=sys.stdout, fname="cmd.log"):
         """Loggerator class constructor.
 
         Create a Loggerator instance for the component with the given name and
@@ -360,16 +361,23 @@ class Loggerator(object):
 
             fname (str) : filename for the log file
         """
-        self.loggerator = logging.getLogger(name[0:15].center(16, '*'))
+        self.loggerator = logging.getLogger(name[0:15].center(16, "*"))
         self.loggerator.setLevel(logging.DEBUG)
 
-        formatString = '%(asctime)s ' + color + '%(name)-16s ' +\
-                       COL_RESET + '[%(levelname)-8s] [%(titular)-32s] %(message)s'
+        formatString = (
+            "%(asctime)s "
+            + color
+            + "%(name)-16s "
+            + COL_RESET
+            + "[%(levelname)-8s] [%(titular)-32s] %(message)s"
+        )
         formatter = logging.Formatter(formatString)
 
         self._maxSize = 1024 * 1024 * 1024
         self._maxCount = 9
-        fileHandler = logging.handlers.RotatingFileHandler(fname, maxBytes=self._maxSize, backupCount=self._maxCount)
+        fileHandler = logging.handlers.RotatingFileHandler(
+            fname, maxBytes=self._maxSize, backupCount=self._maxCount
+        )
         fileHandler.setFormatter(formatter)
         self.loggerator.addHandler(fileHandler)
         self.loggerator.addFilter(ContextFilter())
@@ -379,12 +387,12 @@ class Loggerator(object):
         # self.loggerator.addHandler(consoleHandler)
 
         self.defaultColor = {}
-        self.defaultColor['debug']   = (('FG', 'GREEN'), )
-        self.defaultColor['info']    = (('FG', 'BLUE'), )
-        self.defaultColor['trace']   = (('FG', 'MAGENTA'), )
-        self.defaultColor['display'] = None
-        self.defaultColor['warning'] = (('FG', 'RED'), )
-        self.defaultColor['error']   = (('FG', 'WHITE'), ('BG', 'RED'))
+        self.defaultColor["debug"] = (("FG", "GREEN"),)
+        self.defaultColor["info"] = (("FG", "BLUE"),)
+        self.defaultColor["trace"] = (("FG", "MAGENTA"),)
+        self.defaultColor["display"] = None
+        self.defaultColor["warning"] = (("FG", "RED"),)
+        self.defaultColor["error"] = (("FG", "WHITE"), ("BG", "RED"))
         self.__out = out
         self.__redirect = False
         self.__buffer = None
@@ -401,7 +409,7 @@ class Loggerator(object):
             None
         """
         self.__out.write(str(message))
-        self.__out.write('\n')
+        self.__out.write("\n")
         if self.__redirect:
             # self.__buffer.append(self.__out.getvalue())
             self.__buffer.append("{}\n".format(message))
@@ -467,7 +475,7 @@ class Loggerator(object):
         Returns:
             None
         """
-        msg = self._extended_log(message, 'display', **kwargs)
+        msg = self._extended_log(message, "display", **kwargs)
         self._out(msg)
 
     # =========================================================================
@@ -480,11 +488,11 @@ class Loggerator(object):
         Returns:
             int : Loggin level number to be used by the module.
         """
-        if level in ['debug', 'info', 'warning', 'error']:
+        if level in ["debug", "info", "warning", "error"]:
             return level
-        elif level == 'trace':
+        elif level == "trace":
             return TRACE_LEVEL
-        elif level == 'display':
+        elif level == "display":
             return DISPLAY_LEVEL
         else:
             return logging.NOTSET
@@ -508,8 +516,8 @@ class Loggerator(object):
             str : string to be used as color for log message.
         """
         if isinstance(color, str):
-            color = (('FG', color), )
-        return eval('+'.join(map(lambda x: '%s_%s' % (x[0], x[1]), color)))
+            color = (("FG", color),)
+        return eval("+".join(map(lambda x: "%s_%s" % (x[0], x[1]), color)))
 
     # =========================================================================
     def _log(self, message, level, color=None, *args, **kwargs):
@@ -527,17 +535,17 @@ class Loggerator(object):
         """
         if color:
             color = self._setColor(color)
-            formatted_message = '%s%s%s' % (color, message, COL_RESET)
+            formatted_message = "%s%s%s" % (color, message, COL_RESET)
         else:
             formatted_message = message
         function = getattr(self.loggerator, level, None)
-        if kwargs.get('log', True):
+        if kwargs.get("log", True):
             # Remove any kwargs that is not handled by the standard logging
             # library.
-            if kwargs.get('log', None) is not None:
-                del kwargs['log']
-            if kwargs.get('out', None) is not None:
-                del kwargs['out']
+            if kwargs.get("log", None) is not None:
+                del kwargs["log"]
+            if kwargs.get("out", None) is not None:
+                del kwargs["out"]
 
             if function:
                 function(formatted_message, *args, **kwargs)
@@ -566,20 +574,20 @@ class Loggerator(object):
 
             level (str) : Logging level.
         """
-        color = kwargs.get('color', None)
-        mode = kwargs.pop('mode', 'FG')
-        extended = kwargs.pop('extended', None)
+        color = kwargs.get("color", None)
+        mode = kwargs.pop("mode", "FG")
+        extended = kwargs.pop("extended", None)
         if extended:
             useColor = extended
         elif color:
-            useColor = ((mode, color), )
+            useColor = ((mode, color),)
         else:
             useColor = self.defaultColor[level]
-        kwargs['color'] = useColor
+        kwargs["color"] = useColor
         return self._log(message, level, **kwargs)
 
     # =========================================================================
-    def debug(self, message, color=None, mode='FG', *args, **kwargs):
+    def debug(self, message, color=None, mode="FG", *args, **kwargs):
         """Debug log.
 
         It logs a debug message.
@@ -596,10 +604,10 @@ class Loggerator(object):
         Returns:
             None
         """
-        self._extended_log(message, 'debug', color=color, mode=mode, *args, **kwargs)
+        self._extended_log(message, "debug", color=color, mode=mode, *args, **kwargs)
 
     # =========================================================================
-    def info(self, message, color=None, mode='FG', *args, **kwargs):
+    def info(self, message, color=None, mode="FG", *args, **kwargs):
         """Information log.
 
         It logs an information message.
@@ -616,10 +624,10 @@ class Loggerator(object):
         Returns:
             None
         """
-        self._extended_log(message, 'info', color=color, mode=mode, *args, **kwargs)
+        self._extended_log(message, "info", color=color, mode=mode, *args, **kwargs)
 
     # =========================================================================
-    def trace(self, message, color=None, mode='FG', *args, **kwargs):
+    def trace(self, message, color=None, mode="FG", *args, **kwargs):
         """Trace log.
 
         It logs a trace message.
@@ -636,10 +644,10 @@ class Loggerator(object):
         Returns:
             None
         """
-        self._extended_log(message, 'trace', color=color, mode=mode, *args, **kwargs)
+        self._extended_log(message, "trace", color=color, mode=mode, *args, **kwargs)
 
     # =========================================================================
-    def warning(self, message, color=None, mode='FG', *args, **kwargs):
+    def warning(self, message, color=None, mode="FG", *args, **kwargs):
         """Warning log.
 
         It logs a warning message.
@@ -656,12 +664,12 @@ class Loggerator(object):
         Returns:
             None
         """
-        self._extended_log(message, 'warning', color=color, mode=mode, *args, **kwargs)
-        if kwargs.get('out', False):
+        self._extended_log(message, "warning", color=color, mode=mode, *args, **kwargs)
+        if kwargs.get("out", False):
             self._out(message)
 
     # =========================================================================
-    def error(self, message, color=None, mode='FG', *args, **kwargs):
+    def error(self, message, color=None, mode="FG", *args, **kwargs):
         """Error log.
 
         It logs an error message.
@@ -678,6 +686,8 @@ class Loggerator(object):
         Returns:
             None
         """
-        msg = self._extended_log(message, 'error', color=color, mode=mode, *args, **kwargs)
-        if kwargs.get('out', False):
+        msg = self._extended_log(
+            message, "error", color=color, mode=mode, *args, **kwargs
+        )
+        if kwargs.get("out", False):
             self._out(msg)

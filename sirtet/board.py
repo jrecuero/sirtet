@@ -5,20 +5,19 @@ from sirtet.matrix import Mat, Matrix
 
 
 class Board:
-
-    def __init__(self, mat: Mat=None):
+    def __init__(self, mat: Mat = None):
         self.mat = mat if mat else Mat([])
         self.piece_size = 3
-        self.arena_width  = 9
+        self.arena_width = 9
         self.arena_height = 18
         self.board_width = self.arena_width + 2
         self.board_height = self.arena_height + 1
 
     def new_cell_empty(self) -> Cell:
-        raise Exception('Abstract class')
+        raise Exception("Abstract class")
 
     def new_cell_border(self) -> Cell:
-        raise Exception('Abstract class')
+        raise Exception("Abstract class")
 
     def _new_row(self) -> List[Cell]:
         row: List[Cell] = []
@@ -41,7 +40,7 @@ class Board:
         mat.append(self._new_bottom_row())
         return mat
 
-    def clone(self) -> 'Board':
+    def clone(self) -> "Board":
         b = Board()
         for x in range(self.board_height):
             b.mat.append([])
@@ -54,14 +53,16 @@ class Board:
 
     def set_mat(self, mat: Mat) -> None:
         if len(mat) != self.board_height or len(mat[0]) != self.board_width:
-            assert False, 'board wrong matrix dimension: ({}, {})'.format(len(mat), len(mat) and len(mat[0]))
+            assert False, "board wrong matrix dimension: ({}, {})".format(
+                len(mat), len(mat) and len(mat[0])
+            )
         self.mat = mat
 
     def get_matrix_at(self, pos: Point) -> Matrix:
         mat = Mat([])
         x, y = pos.x, pos.y
         for i in range(x, x + self.piece_size):
-            mat.append(self.mat[i][y:y + self.piece_size])
+            mat.append(self.mat[i][y : y + self.piece_size])
         return Matrix(mat)
 
     def update_with_matrix_at(self, mat: Matrix, pos: Point) -> None:
@@ -102,4 +103,4 @@ class Board:
         self.set_mat(result)
 
     def __str__(self) -> str:
-        return '\n'.join([' '.join(str(_) for _ in row) for row in self.mat])
+        return "\n".join([" ".join(str(_) for _ in row) for row in self.mat])

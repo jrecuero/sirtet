@@ -1,11 +1,10 @@
 from typing import NewType, List, Tuple
 from sirtet.cell import Cell
 
-Mat = NewType('Mat', List[List[Cell]])
+Mat = NewType("Mat", List[List[Cell]])
 
 
 class Matrix:
-
     def __init__(self, m: Mat):
         self.mat: Mat = Mat([])
         self.dim = 3
@@ -21,16 +20,16 @@ class Matrix:
 
     def set_mat(self, m: Mat) -> None:
         if not self._check(m):
-            assert False, 'wrong matrix dimension: {}'.format(m)
+            assert False, "wrong matrix dimension: {}".format(m)
         self.mat = Mat(m[:])
 
     def get_dim(self) -> Tuple:
         return len(self.mat), len(self.mat[0])
 
-    def rotate_clockwise(self) -> 'Matrix':
+    def rotate_clockwise(self) -> "Matrix":
         """Rotate nxn matrix by 90 degrees clockwise.
         """
-        #result matrix
+        # result matrix
         result = Mat([row[:] for row in self.mat])
         m = len(self.mat[0])
         for x in range(0, m):
@@ -38,10 +37,10 @@ class Matrix:
                 result[j][m - 1 - x] = self.mat[x][j]
         return Matrix(result)
 
-    def rotate_anticlockwise(self) -> 'Matrix':
+    def rotate_anticlockwise(self) -> "Matrix":
         """Rotate nxn matrix by 90 degrees anti-clockwise.
         """
-        #result matrix
+        # result matrix
         result = Mat([row[:] for row in self.mat])
         m = len(self.mat[0])
         for x in range(0, m):
@@ -51,7 +50,7 @@ class Matrix:
 
     def get_collisions_with(self, mat: Mat) -> List[Tuple]:
         if not self._check(mat):
-            assert False, 'wrong matrix dimension: {}'.format(mat)
+            assert False, "wrong matrix dimension: {}".format(mat)
         m = len(self.mat[0])
         collisions: List[Tuple] = []
         for x in range(m):
@@ -72,4 +71,4 @@ class Matrix:
         return False
 
     def __str__(self) -> str:
-        return '\n'.join([' '.join(str(_) for _ in row) for row in self.mat])
+        return "\n".join([" ".join(str(_) for _ in row) for row in self.mat])

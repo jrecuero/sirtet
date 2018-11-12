@@ -6,7 +6,7 @@ from sirtet.piece import Piece
 from sirtet.shapes import Generator
 
 
-BH_Event = NewType('BH_Event', int)
+BH_Event = NewType("BH_Event", int)
 
 
 class BoardHandler:
@@ -23,13 +23,13 @@ class BoardHandler:
         self.start_pos: Point
         self.generator: Generator
 
-    def new_piece_at(self, pos: Point=None) -> None:
+    def new_piece_at(self, pos: Point = None) -> None:
         pos = pos if pos else self.start_pos
         self.set_new_piece_at(self.generator.get_next(), pos)
         # Check if there is any collision with the new piece.
         board_mat = self.board.get_matrix_at(pos)
         if self.piece.matrix.is_collision_with(board_mat.mat):
-            print('GAME OVER')
+            print("GAME OVER")
             exit(0)
 
     def set_new_piece_at(self, mat: Matrix, pos: Point) -> None:
@@ -78,7 +78,9 @@ class BoardHandler:
         new_mat = self.piece.rotate_anticlockwise()
         self._piece_rotate(new_mat)
 
-    def setup(self, board: Board, generator: Generator, start_pos: Point) -> 'BoardHandler':
+    def setup(
+        self, board: Board, generator: Generator, start_pos: Point
+    ) -> "BoardHandler":
         self.board = board
         # TODO: This could be moved outside to the module where Board is
         # created.

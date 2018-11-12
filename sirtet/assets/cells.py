@@ -3,7 +3,6 @@ from sirtet.cell import Cell
 
 
 class Int(Cell):
-
     def __init__(self, content: Any):
         super(Int, self).__init__(content)
 
@@ -13,32 +12,31 @@ class Int(Cell):
     def collision(self, other: Cell) -> bool:
         return self.match() and other.match()
 
-    def update_with(self, other: 'Cell') -> None:
+    def update_with(self, other: "Cell") -> None:
         if self._content == 0:
             self._content = other._content
 
-    def clone(self) -> 'Cell':
+    def clone(self) -> "Cell":
         return Int(self._content)
 
     def __str__(self) -> str:
         if self._content == 0:
-            return '.'
+            return "."
         # return str(self._content)
         # return chr(9608)
         return chr(9209)
 
 
 class Segment(Int):
-
     def __init__(self, content: Any):
         super(Segment, self).__init__(content)
 
-    def clone(self) -> 'Cell':
+    def clone(self) -> "Cell":
         return Segment(self._content)
 
     def __str__(self) -> str:
         if self._content == 0:
-            return '_'
+            return "_"
         return str(self._content)
         # elif self._content == 1:
         #     return chr(12872)

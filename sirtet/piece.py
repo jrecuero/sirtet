@@ -3,7 +3,6 @@ from sirtet.matrix import Matrix
 
 
 class Piece:
-
     def __init__(self):
         self.matrix = None
         self.pos = None
