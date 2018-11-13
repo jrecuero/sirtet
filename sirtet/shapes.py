@@ -7,189 +7,53 @@ from sirtet.matrix import Mat, Matrix
 class Shapes:
     def __init__(self, cell_klass: Callable[..., Cell]):
         self.cell: Callable[..., Cell] = cell_klass
+        self._patterns: List[List[List[int]]] = [
+            [[0, 0, 0], [1, 1, 0], [0, 1, 1]],
+            [[0, 0, 0], [0, 1, 1], [1, 1, 0]],
+            [[1, 0, 0], [1, 0, 0], [1, 1, 0]],
+            [[0, 0, 1], [0, 0, 1], [0, 1, 1]],
+            [[1, 0, 0], [1, 0, 0], [1, 1, 1]],
+            [[0, 0, 1], [0, 0, 1], [1, 1, 1]],
+            [[1, 1, 1], [0, 0, 1], [1, 1, 1]],
+            [[0, 0, 1], [0, 1, 1], [0, 0, 1]],
+            [[0, 0, 1], [1, 1, 1], [0, 0, 1]],
+            [[1, 0, 1], [0, 1, 1], [0, 0, 1]],
+            [[0, 0, 1], [0, 1, 1], [1, 0, 1]],
+            [[0, 1, 0], [0, 1, 0], [0, 1, 0]],
+            [[1, 1, 0], [1, 1, 0], [1, 1, 0]],
+            [[1, 1, 1], [1, 1, 0], [1, 1, 0]],
+            [[1, 1, 0], [1, 1, 1], [1, 1, 0]],
+            [[1, 1, 0], [1, 1, 0], [1, 1, 1]],
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+            [[1, 0, 1], [0, 1, 0], [1, 0, 1]],
+            [[1, 1, 0], [1, 1, 1], [1, 1, 1]],
+            [[1, 1, 1], [1, 1, 0], [1, 1, 1]],
+            [[1, 1, 1], [1, 1, 1], [1, 1, 0]],
+            [[0, 0, 0], [0, 1, 0], [0, 0, 0]],
+            [[0, 0, 0], [1, 1, 0], [0, 0, 0]],
+            [[1, 0, 0], [1, 1, 0], [0, 0, 0]],
+            [[0, 0, 0], [1, 1, 0], [1, 0, 0]],
+            [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
+        ]
+
+        def _new_mat(mat: Mat):
+            def __new_mat():
+                return mat
+
+            return __new_mat
+
+        # self._shapes: List[Callable[[], Mat]] = []
+        # for entry in self._patterns:
+        #     trav = []
+        #     for row in entry:
+        #         tmp = []
+        #         for col in row:
+        #             tmp.append(self.cell(col))
+        #         trav.append(tmp)
+        #     self._shapes.append(_new_mat(Mat(trav)))
         self._shapes: List[Callable[[], Mat]] = [
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(1)],
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(0), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                    [self.cell(0), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(0), self.cell(0), self.cell(0)],
-                    [self.cell(1), self.cell(1), self.cell(0)],
-                    [self.cell(1), self.cell(0), self.cell(0)],
-                ]
-            ),
-            lambda: Mat(
-                [
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                    [self.cell(1), self.cell(1), self.cell(1)],
-                ]
-            ),
+            _new_mat(Mat([[self.cell(col) for col in row] for row in entry]))
+            for entry in self._patterns
         ]
 
     def dim(self) -> int:
@@ -208,8 +72,9 @@ class Generator:
         return Matrix(self.shapes.get())
 
 
-# if __name__ == '__main__':
+# if __name__ == "__main__":
 #     from sirtet.assets.cells import Segment
+
 #     s = Shapes(Segment)
 #     for x in s._shapes:
 #         print(Matrix(x()))
