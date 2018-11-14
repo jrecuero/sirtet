@@ -69,21 +69,4 @@ class Generator:
         self.shapes: Shapes = Shapes(cell_klass)
 
     def get_next(self) -> Matrix:
-        # return Matrix(self.shapes.get())
-
-        # mat = self.shapes.get()
-        # for row in mat:
-        #     for col in row:
-        #         col.randomize()
-        # return Matrix(mat)
-
         return Matrix(self.shapes.get()).randomize()
-
-
-# if __name__ == "__main__":
-#     from sirtet.assets.cells import Segment
-
-#     s = Shapes(Segment)
-#     for x in s._shapes:
-#         print(Matrix(x()))
-#         print()

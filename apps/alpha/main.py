@@ -3,24 +3,25 @@ from sirtet.point import Point
 from sirtet.board import Board
 from sirtet.shapes import Generator
 from sirtet.board_handler import BoardHandler
-from sirtet.logic import Logic
-from sirtet.assets.cells import Segment, Int
+from sirtet.assets.cells import Block
+from sirtet.logics.roller.segment import Segment
+from sirtet.logics.roller.logic import LogicRoller
 from tools.cursor import Cursor
 
 
 class BoardText(Board):
     def new_cell_empty(self) -> Cell:
-        return Int(0)
+        return Block(0)
 
     def new_cell_border(self) -> Cell:
-        return Int(1)
+        return Block(1)
 
 
 if __name__ == "__main__":
     bh: BoardHandler = BoardHandler()
     b = BoardText()
-    # b.set_mat(self.board.new_clean_mat())
-    bh.setup(b, Generator(Segment), Logic(), Point(0, 1))
+    b.set_mat(b.new_clean_mat())
+    bh.setup(b, Generator(Segment), LogicRoller(), Point(0, 1))
     bh.new_piece_at()
     while True:
         Cursor.print(Cursor.clear_entire_screen())

@@ -31,8 +31,8 @@ class BoardHandler:
         # Check if there is any collision with the new piece.
         board_mat = self.board.get_matrix_at(pos)
         if self.piece.matrix.is_collision_with(board_mat.mat):
-            print("GAME OVER")
-            exit(0)
+            self.logic.event_handler(Logic.GAME_OVER, None)
+        self.logic.event_handler(Logic.NEW_PIECE, self.piece)
 
     def set_new_piece_at(self, mat: Matrix, pos: Point) -> None:
         self.piece.matrix = mat
@@ -84,9 +84,6 @@ class BoardHandler:
         self, board: Board, generator: Generator, logic: Logic, start_pos: Point
     ) -> "BoardHandler":
         self.board = board
-        # TODO: This could be moved outside to the module where Board is
-        # created.
-        self.board.set_mat(self.board.new_clean_mat())
         self.piece = Piece()
         self.start_pos = start_pos
         self.generator = generator
