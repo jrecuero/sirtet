@@ -70,5 +70,11 @@ class Matrix:
                 return True
         return False
 
+    def randomize(self) -> "Matrix":
+        for row in self.mat:
+            for col in row:
+                col.randomize()
+        return self
+
     def __str__(self) -> str:
         return "\n".join([" ".join(str(_) for _ in row) for row in self.mat])

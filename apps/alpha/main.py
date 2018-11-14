@@ -3,6 +3,7 @@ from sirtet.point import Point
 from sirtet.board import Board
 from sirtet.shapes import Generator
 from sirtet.board_handler import BoardHandler
+from sirtet.logic import Logic
 from sirtet.assets.cells import Segment, Int
 from tools.cursor import Cursor
 
@@ -19,7 +20,7 @@ if __name__ == "__main__":
     bh: BoardHandler = BoardHandler()
     b = BoardText()
     # b.set_mat(self.board.new_clean_mat())
-    bh.setup(b, Generator(Segment), Point(0, 1))
+    bh.setup(b, Generator(Segment), Logic(), Point(0, 1))
     bh.new_piece_at()
     while True:
         Cursor.print(Cursor.clear_entire_screen())

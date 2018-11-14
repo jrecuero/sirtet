@@ -1,5 +1,5 @@
 import random
-from typing import List, Callable, Union
+from typing import List, Callable, Union, Any
 from sirtet.cell import Cell
 from sirtet.matrix import Mat, Matrix
 
@@ -69,7 +69,15 @@ class Generator:
         self.shapes: Shapes = Shapes(cell_klass)
 
     def get_next(self) -> Matrix:
-        return Matrix(self.shapes.get())
+        # return Matrix(self.shapes.get())
+
+        # mat = self.shapes.get()
+        # for row in mat:
+        #     for col in row:
+        #         col.randomize()
+        # return Matrix(mat)
+
+        return Matrix(self.shapes.get()).randomize()
 
 
 # if __name__ == "__main__":

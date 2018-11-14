@@ -79,10 +79,19 @@ class Board:
             for yi, col in enumerate(row):
                 self.mat[x + xi][y + yi] = self.new_cell_empty()
 
+    def get_arena_for_row(self, row: List[Cell]) -> List[Cell]:
+        return row[1 : self.board_width - 1]
+
+    def get_arena_for_row_index(self, index: int) -> List[Cell]:
+        return self.get_arena_for_row(self.mat[index])
+
     def check_for_match_row_at(self, row: int) -> bool:
         # arena for matching rows does not include board borders.
-        for col in range(1, self.board_width):
-            if not self.mat[row][col].match():
+        #
+        # for col in range(1, self.board_width):
+        #     if not self.mat[row][col].match():
+        for col in self.get_arena_for_row(self.mat[row]):
+            if not col.match():
                 return False
         return True
 

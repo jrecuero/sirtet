@@ -4,6 +4,7 @@ from sirtet.board import Board
 from sirtet.matrix import Matrix
 from sirtet.piece import Piece
 from sirtet.shapes import Generator
+from sirtet.logic import Logic
 
 
 BH_Event = NewType("BH_Event", int)
@@ -18,10 +19,11 @@ class BoardHandler:
     ROTATE_ANTICLOCK = BH_Event(5)
 
     def __init__(self):
-        self.board = None
-        self.piece = None
+        self.board: Board
+        self.piece: Piece
         self.start_pos: Point
         self.generator: Generator
+        self.logic: Logic
 
     def new_piece_at(self, pos: Point = None) -> None:
         pos = pos if pos else self.start_pos
@@ -79,7 +81,7 @@ class BoardHandler:
         self._piece_rotate(new_mat)
 
     def setup(
-        self, board: Board, generator: Generator, start_pos: Point
+        self, board: Board, generator: Generator, logic: Logic, start_pos: Point
     ) -> "BoardHandler":
         self.board = board
         # TODO: This could be moved outside to the module where Board is
@@ -88,9 +90,20 @@ class BoardHandler:
         self.piece = Piece()
         self.start_pos = start_pos
         self.generator = generator
+        self.logic = logic
         return self
 
-    def event_handler(self, event: BH_Event):
+    def _process_bottomed(self) -> None:
+        matched_rows = self.board.check_for_match_row()
+        if matched_rows:
+            matched_cells = [
+                self.board.get_arena_for_row_index(i) for i in matched_rows
+            ]
+            self.logic.event_handler(Logic.MATCH_ROW, matched_cells)
+            self.board.remove_rows(matched_rows)
+        self.new_piece_at()
+
+    def event_handler(self, event: BH_Event) -> bool:
         bottomed: bool = False
         if event == BoardHandler.MOVE_DOWN:
             bottomed = self.piece_move_down()
@@ -107,10 +120,7 @@ class BoardHandler:
             self.piece_rotate_anticlockwise()
             bottomed = self.piece_move_down()
         if bottomed:
-            matched_rows = self.board.check_for_match_row()
-            if matched_rows:
-                self.board.remove_rows(matched_rows)
-            self.new_piece_at()
+            self._process_bottomed()
         return bottomed
 
     def render_to(self) -> Board:

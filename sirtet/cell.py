@@ -17,5 +17,8 @@ class Cell:
     def clone(self) -> "Cell":
         return Cell(self._content)
 
+    def randomize(self) -> "Cell":
+        return self
+
     def __str__(self) -> str:
         return str(self._content)

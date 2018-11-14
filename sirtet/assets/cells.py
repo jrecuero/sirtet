@@ -1,3 +1,4 @@
+import random
 from typing import Any
 from sirtet.cell import Cell
 
@@ -33,6 +34,11 @@ class Segment(Int):
 
     def clone(self) -> "Cell":
         return Segment(self._content)
+
+    def randomize(self) -> "Cell":
+        if self.match():
+            self._content = random.randint(1, 9)
+        return self
 
     def __str__(self) -> str:
         if self._content == 0:
