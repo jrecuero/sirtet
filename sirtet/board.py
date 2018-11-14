@@ -113,3 +113,8 @@ class Board:
 
     def __str__(self) -> str:
         return "\n".join([" ".join(str(_) for _ in row) for row in self.mat])
+
+    def render(self) -> None:
+        for row in self.mat:
+            for cell in row:
+                cell.render()

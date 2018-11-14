@@ -65,6 +65,7 @@ class BoardHandler:
         bottomed = self._piece_move(new_pos)
         if bottomed:
             self.board.update_with_matrix_at(self.piece.matrix, self.piece.pos)
+            self.logic.event_handler(Logic.BOTTOMED_PIECE, self.piece)
         return bottomed
 
     def _piece_rotate(self, new_mat: Matrix) -> None:
@@ -120,8 +121,13 @@ class BoardHandler:
             self._process_bottomed()
         return bottomed
 
-    def render_to(self) -> Board:
+    def board_to_render(self) -> Board:
         b = self.board.clone()
         if self.piece.pos:
             b.update_with_matrix_at(self.piece.matrix, self.piece.pos)
         return b
+
+    def render(self) -> None:
+        b = self.board_to_render()
+        self.logic.event_handler(Logic.RENDER, None)
+        b.render()

@@ -1,5 +1,5 @@
 import random
-from typing import Any
+from typing import List, Any, cast
 from sirtet.cell import Cell
 from sirtet.logics.roller.spores import Null, Damage, Life, Skill
 
@@ -23,7 +23,11 @@ class Segment(Cell):
             self._content = other._content
 
     def randomize(self) -> "Cell":
-        spores = [Damage] * 7 + [Life] * 2 + [Skill]
+        spores: List[Any] = (
+            cast(List[Any], [Damage]) * 7
+            + cast(List[Any], [Life]) * 2
+            + cast(List[Any], [Skill])
+        )
         if self.match():
             self._content = spores[random.randint(0, len(spores) - 1)]()
         else:
