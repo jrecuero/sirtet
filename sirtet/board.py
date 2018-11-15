@@ -6,12 +6,12 @@ from sirtet.matrix import Mat, Matrix
 
 class Board:
     def __init__(self, mat: Mat = None):
-        self.mat = mat if mat else Mat([])
         self.piece_size = 3
         self.arena_width = 9
         self.arena_height = 18
         self.board_width = self.arena_width + 2
         self.board_height = self.arena_height + 1
+        self.mat = mat if mat is not None else self.default_mat()
 
     def new_cell_empty(self) -> Cell:
         raise Exception("Abstract class")
@@ -33,7 +33,7 @@ class Board:
             row.append(self.new_cell_border())
         return row
 
-    def new_clean_mat(self) -> Mat:
+    def default_mat(self) -> Mat:
         mat = Mat([])
         for _ in range(self.board_height - 1):
             mat.append(self._new_row())
@@ -41,7 +41,7 @@ class Board:
         return mat
 
     def clone(self) -> "Board":
-        b = Board()
+        b = self.__class__(Mat([]))
         for x in range(self.board_height):
             b.mat.append([])
             for y in range(self.board_width):

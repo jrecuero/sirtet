@@ -1,13 +1,18 @@
 from sirtet.cell import Cell
 from sirtet.point import Point
+from sirtet.matrix import Mat
 from sirtet.board import Board
 from sirtet.shapes import Generator
+from sirtet.events import Events
 from sirtet.assets.cells import Block
 from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
 
 
 class BoardText(Board):
+    def __init__(self, mat: Mat = None):
+        super(BoardText, self).__init__(mat)
+
     def new_cell_empty(self) -> Cell:
         return Block(0)
 
@@ -25,12 +30,12 @@ if __name__ == "__main__":
         if key == "x":
             exit(0)
         elif key == "":
-            h.event_handler(RollerHandler.MOVE_DOWN)
+            h.event_handler(Events.MOVE_DOWN)
         elif key == "a":
-            h.event_handler(RollerHandler.MOVE_LEFT)
+            h.event_handler(Events.MOVE_LEFT)
         elif key == "s":
-            h.event_handler(RollerHandler.MOVE_RIGHT)
+            h.event_handler(Events.MOVE_RIGHT)
         elif key == "q":
-            h.event_handler(RollerHandler.ROTATE_ANTICLOCK)
+            h.event_handler(Events.ROTATE_ANTICLOCK)
         elif key == "w":
-            h.event_handler(RollerHandler.ROTATE_CLOCK)
+            h.event_handler(Events.ROTATE_CLOCK)

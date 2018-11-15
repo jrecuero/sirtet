@@ -1,38 +1,33 @@
-from typing import NewType
+from typing import NewType, List, Tuple, Any
 from sirtet.point import Point
 from sirtet.board import Board
 from sirtet.matrix import Matrix
 from sirtet.piece import Piece
 from sirtet.shapes import Generator
-from sirtet.logic import Logic
+from sirtet.events import Event, Events
 
 
-BH_Event = NewType("BH_Event", int)
+Result_Event = NewType("Result_Event", List[Tuple[Event, Any]])
 
 
 class BoardHandler:
-
-    MOVE_DOWN = BH_Event(1)
-    MOVE_LEFT = BH_Event(2)
-    MOVE_RIGHT = BH_Event(3)
-    ROTATE_CLOCK = BH_Event(4)
-    ROTATE_ANTICLOCK = BH_Event(5)
-
     def __init__(self):
         self.board: Board
         self.piece: Piece
         self.start_pos: Point
         self.generator: Generator
-        self.logic: Logic
 
-    def new_piece_at(self, pos: Point = None) -> None:
+    def new_piece_at(self, pos: Point = None) -> Result_Event:
+        result: Result_Event = Result_Event([])
         pos = pos if pos else self.start_pos
         self.set_new_piece_at(self.generator.get_next(), pos)
         # Check if there is any collision with the new piece.
         board_mat = self.board.get_matrix_at(pos)
         if self.piece.matrix.is_collision_with(board_mat.mat):
-            self.logic.event_handler(Logic.GAME_OVER, None)
-        self.logic.event_handler(Logic.NEW_PIECE, self.piece)
+            result.append((Events.GAME_OVER, None))
+        else:
+            result.append((Events.NEW_PIECE, self.piece))
+        return result
 
     def set_new_piece_at(self, mat: Matrix, pos: Point) -> None:
         self.piece.matrix = mat
@@ -60,13 +55,14 @@ class BoardHandler:
         new_pos = self.piece.move_right()
         self._piece_move(new_pos)
 
-    def piece_move_down(self) -> bool:
+    def piece_move_down(self) -> Tuple[bool, Result_Event]:
+        result: Result_Event = Result_Event([])
         new_pos = self.piece.move_down()
         bottomed = self._piece_move(new_pos)
         if bottomed:
             self.board.update_with_matrix_at(self.piece.matrix, self.piece.pos)
-            self.logic.event_handler(Logic.BOTTOMED_PIECE, self.piece)
-        return bottomed
+            result.append((Events.BOTTOMED_PIECE, self.piece))
+        return bottomed, result
 
     def _piece_rotate(self, new_mat: Matrix) -> None:
         board_mat = self.board.get_matrix_at(self.piece.pos)
@@ -82,44 +78,46 @@ class BoardHandler:
         self._piece_rotate(new_mat)
 
     def setup(
-        self, board: Board, generator: Generator, logic: Logic, start_pos: Point
+        self, board: Board, generator: Generator, start_pos: Point
     ) -> "BoardHandler":
         self.board = board
         self.piece = Piece()
         self.start_pos = start_pos
         self.generator = generator
-        self.logic = logic
         return self
 
-    def _process_bottomed(self) -> None:
+    def _process_bottomed(self) -> Result_Event:
+        result: Result_Event = Result_Event([])
         matched_rows = self.board.check_for_match_row()
         if matched_rows:
             matched_cells = [
                 self.board.get_arena_for_row_index(i) for i in matched_rows
             ]
-            self.logic.event_handler(Logic.MATCH_ROW, matched_cells)
+            result.append((Events.MATCH_ROW, matched_cells))
             self.board.remove_rows(matched_rows)
-        self.new_piece_at()
+        result.extend(self.new_piece_at())
+        return result
 
-    def event_handler(self, event: BH_Event) -> bool:
+    def event_handler(self, event: Event) -> Result_Event:
         bottomed: bool = False
-        if event == BoardHandler.MOVE_DOWN:
-            bottomed = self.piece_move_down()
-        elif event == BoardHandler.MOVE_LEFT:
+        result: Result_Event = Result_Event([])
+        if event == Events.MOVE_DOWN:
+            bottomed, result = self.piece_move_down()
+        elif event == Events.MOVE_LEFT:
             self.piece_move_left()
-            bottomed = self.piece_move_down()
-        elif event == BoardHandler.MOVE_RIGHT:
+            bottomed, result = self.piece_move_down()
+        elif event == Events.MOVE_RIGHT:
             self.piece_move_right()
-            bottomed = self.piece_move_down()
-        elif event == BoardHandler.ROTATE_CLOCK:
+            bottomed, result = self.piece_move_down()
+        elif event == Events.ROTATE_CLOCK:
             self.piece_rotate_clockwise()
-            bottomed = self.piece_move_down()
-        elif event == BoardHandler.ROTATE_ANTICLOCK:
+            bottomed, result = self.piece_move_down()
+        elif event == Events.ROTATE_ANTICLOCK:
             self.piece_rotate_anticlockwise()
-            bottomed = self.piece_move_down()
+            bottomed, result = self.piece_move_down()
         if bottomed:
-            self._process_bottomed()
-        return bottomed
+            result.extend(self._process_bottomed())
+        return result
 
     def board_to_render(self) -> Board:
         b = self.board.clone()
@@ -127,7 +125,9 @@ class BoardHandler:
             b.update_with_matrix_at(self.piece.matrix, self.piece.pos)
         return b
 
-    def render(self) -> None:
+    def render(self) -> Result_Event:
+        result: Result_Event = Result_Event([])
         b = self.board_to_render()
-        self.logic.event_handler(Logic.RENDER, None)
+        result.append((Events.RENDER, None))
         b.render()
+        return result

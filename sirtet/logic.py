@@ -1,19 +1,10 @@
 from typing import NewType, List, Any, NoReturn
 from sirtet.cell import Cell
 from sirtet.piece import Piece
-
-
-Logic_Event = NewType("Logic_Event", int)
+from sirtet.events import Event, Events
 
 
 class Logic:
-
-    GAME_OVER = Logic_Event(1)
-    NEW_PIECE = Logic_Event(2)
-    MATCH_ROW = Logic_Event(3)
-    RENDER = Logic_Event(4)
-    BOTTOMED_PIECE = Logic_Event(5)
-
     def __init__(self):
         pass
 
@@ -32,16 +23,16 @@ class Logic:
     def _process_render(self) -> None:
         pass
 
-    def event_handler(self, event: Logic_Event, data: Any):
-        if event == Logic.GAME_OVER:
+    def event_handler(self, event: Event, data: Any):
+        if event == Events.GAME_OVER:
             self._process_game_over()
-        elif event == Logic.NEW_PIECE:
+        elif event == Events.NEW_PIECE:
             self._process_new_piece(data)
-        elif event == Logic.MATCH_ROW:
+        elif event == Events.MATCH_ROW:
             self._process_match_row(data)
-        elif event == Logic.RENDER:
+        elif event == Events.RENDER:
             self._process_render()
-        elif event == Logic.BOTTOMED_PIECE:
+        elif event == Events.BOTTOMED_PIECE:
             self._process_bottomed_piece(data)
         else:
             pass
