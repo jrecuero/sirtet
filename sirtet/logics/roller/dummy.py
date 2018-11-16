@@ -16,7 +16,39 @@ class Dummy:
         self.description: str = ""
         self.damage: int = damage
         self.life: int = life
-        self.skill: int = skill
+        self.__max_life: int = life
+        self.skill: int = 0
+        self.__max_skill: int = skill
         self.class_damage: int = 1
         self.class_life: int = 1
         self.class_skill: int = 1
+
+    def get_damage(self, damage: int) -> int:
+        return damage * self.class_damage * self.damage
+
+    def get_life(self, life: int) -> int:
+        return life * self.class_life
+
+    def get_skill(self, skill: int) -> int:
+        return skill * self.class_skill
+
+    def damaged(self, damage: int) -> "Dummy":
+        self.damage -= damage
+        return self
+
+    def healed(self, heal: int) -> "Dummy":
+        self.life += heal
+        if self.life > self.__max_life:
+            self.life = self.__max_life
+        return self
+
+    def skilled(self, skill: int) -> "Dummy":
+        self.skill += skill
+        if self.skill > self.__max_skill:
+            self.skill = self.__max_skill
+        return self
+
+    def __str__(self) -> str:
+        return "{0:<8} Life: {1:<4} Skil: {2:<4}".format(
+            self.name, self.life, self.skill
+        )

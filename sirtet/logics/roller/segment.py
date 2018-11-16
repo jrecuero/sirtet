@@ -37,7 +37,8 @@ class Segment(Cell):
         return self
 
     def __str__(self) -> str:
-        return str(self._content)
+        # return str(self._content)
+        return "{} ".format(str(self._content))
         # elif self._content == 1:
         #     return chr(12872)
         # elif self._content == 2:

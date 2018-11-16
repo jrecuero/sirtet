@@ -26,6 +26,7 @@ class BoardText(Board):
 def main(stdscr):
     # Make stdscr.getch non-blocking
     stdscr.nodelay(True)
+    curses.curs_set(False)
 
     h = RollerHandler()
     h.setup(BoardText(), Generator(Segment), Point(0, 1))
@@ -36,6 +37,7 @@ def main(stdscr):
     while True:
         stdscr.clear()
         h.render(stdscr)
+        stdscr.addstr("\n")
         # key = input("Enter: ").lower()
         key = stdscr.getch()
         # Clear out anything else the user has typed in
@@ -43,15 +45,15 @@ def main(stdscr):
 
         if key == ord("x"):
             exit(0)
-        elif key == ord("d"):
+        elif key == ord(" "):
             h.event_handler(Events.MOVE_DOWN)
-        elif key == ord("a"):
+        elif key == ord("k"):
             h.event_handler(Events.MOVE_LEFT)
-        elif key == ord("s"):
+        elif key == ord("l"):
             h.event_handler(Events.MOVE_RIGHT)
-        elif key == ord("q"):
+        elif key == ord("a"):
             h.event_handler(Events.ROTATE_ANTICLOCK)
-        elif key == ord("w"):
+        elif key == ord("s"):
             h.event_handler(Events.ROTATE_CLOCK)
         time.sleep(0.05)
         if counter == 20:

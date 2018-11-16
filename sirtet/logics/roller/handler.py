@@ -7,7 +7,8 @@ from sirtet.board_handler import BoardHandler
 from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.dummy import Dummy
 from sirtet.logics.roller.logic import LogicRoller
-from tools.cursor import Cursor
+
+# from tools.cursor import Cursor
 
 
 class RollerHandler:
@@ -26,47 +27,18 @@ class RollerHandler:
     def render(self, stdscr) -> None:
         # Cursor.print(Cursor.clear_entire_screen())
         # Cursor.print(Cursor.move_upper_left(0))
-        stdscr.addstr("\n")
-        stdscr.addstr(
-            "Player: {0:<8} Life: {1:<4} Skil: {2:<4}\n".format(
-                self.player.name, self.player.life, self.player.skill
-            )
-        )
-        stdscr.addstr(
-            "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}\n".format(
-                self.enemies[0].name, self.enemies[0].life, self.enemies[0].skill
-            )
-        )
-        stdscr.addstr("\n")
-        stdscr.addstr("{}".format(self.bhandler.board_to_render()))
+        # stdscr.addstr("\n")
+        stdscr.addstr(0, 0, "Player: {}\n".format(self.player))
+        stdscr.addstr(1, 0, "Enemy:  {}\n".format(self.enemies[0]))
+        # stdscr.addstr("\n")
+        stdscr.addstr(3, 0, "{}".format(self.bhandler.board_to_render()))
 
     def _process_match_damage(self, data: Dict) -> Result_Event:
         result: Result_Event = Result_Event([])
-        damage = data["damage"]
-        life = data["life"]
-        skill = data["skill"]
-        outch = data["outch"]
-        damage = damage * self.player.class_damage * self.player.damage
-        self.player.life += life
-        self.player.skill += skill
-        enemy = self.enemies[0]
-        enemy.life -= damage
-        self.player.life -= outch * enemy.class_damage * enemy.damage
-
-        # print()
-        # print("Damage: {0} Life: {1} Skil: {2}".format(damage, life, skill))
-        # print(
-        #     "Player: {0:<8} Life: {1:<4} Skil: {2:<4}".format(
-        #         self.player.name, self.player.life, self.player.skill
-        #     )
-        # )
-        # print(
-        #     "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}".format(
-        #         self.enemies[0].name, self.enemies[0].life, self.enemies[0].skill
-        #     )
-        # )
-        # input("\n")
-
+        self.player.healed(self.player.get_life(data["life"]))
+        self.player.skilled(self.player.get_skill(data["skill"]))
+        self.enemies[0].damaged(self.player.get_damage(data["damage"]))
+        self.player.damaged(self.enemies[0].get_damage(data["outch"]))
         return result
 
     def event_handler(self, event: Event, data: Any = None) -> None:
