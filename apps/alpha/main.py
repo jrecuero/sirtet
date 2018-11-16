@@ -7,6 +7,7 @@ from sirtet.events import Events
 from sirtet.assets.cells import Block
 from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
+from sirtet.logics.roller.dummy import Dummy
 
 
 class BoardText(Board):
@@ -23,6 +24,8 @@ class BoardText(Board):
 if __name__ == "__main__":
     h = RollerHandler()
     h.setup(BoardText(), Generator(Segment), Point(0, 1))
+    h.player = Dummy("ME", 100, 1, 100)
+    h.enemies.append(Dummy("ORC", 50, 1, 10))
     h.start()
     while True:
         h.render()

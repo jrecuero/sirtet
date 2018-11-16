@@ -1,45 +1,98 @@
-from typing import NewType, Any
+from typing import NewType, List, Any, Dict, cast
 from sirtet.point import Point
 from sirtet.board import Board
-from sirtet.board import Board
 from sirtet.shapes import Generator
-from sirtet.events import Event, Events
-from sirtet.board_handler import BoardHandler, Result_Event
+from sirtet.events import Event, Events, Result_Event
+from sirtet.board_handler import BoardHandler
 from sirtet.logics.roller.segment import Segment
+from sirtet.logics.roller.dummy import Dummy
 from sirtet.logics.roller.logic import LogicRoller
 from tools.cursor import Cursor
 
 
 class RollerHandler:
     def __init__(self):
-        self.bh: BoardHandler = BoardHandler()
+        self.bhandler: BoardHandler = BoardHandler()
         self.logic: Logic = LogicRoller()
+        self.player: Dummy = None
+        self.enemies: List[Dummy] = []
 
     def setup(self, board: Board, gen: Generator, start_point: Point) -> None:
-        self.bh.setup(board, gen, start_point)
+        self.bhandler.setup(board, gen, start_point)
 
     def start(self) -> None:
-        self.bh.new_piece_at()
+        self.bhandler.new_piece_at()
 
     def render(self) -> None:
-        Cursor.print(Cursor.clear_entire_screen())
-        Cursor.print(Cursor.move_upper_left(0))
+        # Cursor.print(Cursor.clear_entire_screen())
+        # Cursor.print(Cursor.move_upper_left(0))
         print()
-        print(self.bh.board_to_render())
+        print(
+            "Player: {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+                self.player.name, self.player.life, self.player.skill
+            )
+        )
+        print(
+            "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+                self.enemies[0].name, self.enemies[0].life, self.enemies[0].skill
+            )
+        )
+        print()
+        print(self.bhandler.board_to_render())
+
+    def _process_match_damage(self, data: Dict) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        damage = data["damage"]
+        life = data["life"]
+        skill = data["skill"]
+        outch = data["outch"]
+        damage = damage * self.player.class_damage * self.player.damage
+        self.player.life += life
+        self.player.skill += skill
+        enemy = self.enemies[0]
+        enemy.life -= damage
+        self.player.life -= outch * enemy.class_damage * enemy.damage
+
+        # print()
+        # print("Damage: {0} Life: {1} Skil: {2}".format(damage, life, skill))
+        # print(
+        #     "Player: {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+        #         self.player.name, self.player.life, self.player.skill
+        #     )
+        # )
+        # print(
+        #     "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+        #         self.enemies[0].name, self.enemies[0].life, self.enemies[0].skill
+        #     )
+        # )
+        # input("\n")
+
+        return result
 
     def event_handler(self, event: Event, data: Any = None) -> None:
         result: Result_Event = Result_Event([])
-        if event == Events.MOVE_DOWN:
-            result = self.bh.event_handler(Events.MOVE_DOWN)
-        elif event == Events.MOVE_LEFT:
-            result = self.bh.event_handler(Events.MOVE_LEFT)
-        elif event == Events.MOVE_RIGHT:
-            result = self.bh.event_handler(Events.MOVE_RIGHT)
-        elif event == Events.ROTATE_ANTICLOCK:
-            result = self.bh.event_handler(Events.ROTATE_ANTICLOCK)
-        elif event == Events.ROTATE_CLOCK:
-            result = self.bh.event_handler(Events.ROTATE_CLOCK)
+        if event in [
+            Events.MOVE_DOWN,
+            Events.MOVE_LEFT,
+            Events.MOVE_RIGHT,
+            Events.ROTATE_ANTICLOCK,
+            Events.ROTATE_CLOCK,
+        ]:
+            result = self.bhandler.event_handler(event, data)
+        elif event in [
+            Events.GAME_OVER,
+            Events.NEW_PIECE,
+            Events.MATCH_ROW,
+            Events.RENDER,
+            Events.BOTTOMED_PIECE,
+        ]:
+            result = self.logic.event_handler(event, data)
+        elif event == Events.EXIT:
+            exit(0)
+        elif event == Events.MATCH_DAMAGE:
+            result = self._process_match_damage(cast(Dict, data))
         else:
             assert False, "Unknown event"
+        # fallback any events returned by local handlers.
         for event, data in result:
-            self.logic.event_handler(event, data)
+            self.event_handler(event, data)

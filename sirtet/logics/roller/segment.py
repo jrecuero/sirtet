@@ -1,10 +1,17 @@
 import random
 from typing import List, Any, cast
 from sirtet.cell import Cell
-from sirtet.logics.roller.spores import Null, Damage, Life, Skill
+from sirtet.logics.roller.spores import Null, Damage, Life, Skill, Outch
 
 
 class Segment(Cell):
+    SPORES: List[Any] = (
+        cast(List[Any], [Damage]) * 60
+        + cast(List[Any], [Life]) * 15
+        + cast(List[Any], [Skill]) * 10
+        + cast(List[Any], [Outch]) * 15
+    )
+
     def __init__(self, content: Any):
         super(Segment, self).__init__(content)
         if isinstance(content, int):
@@ -13,7 +20,7 @@ class Segment(Cell):
             else:
                 self._content = Null()
         else:
-            self._content = content
+            self._content = content.__class__()
 
     def match(self) -> bool:
         return self._content.match()
@@ -23,13 +30,8 @@ class Segment(Cell):
             self._content = other._content
 
     def randomize(self) -> "Cell":
-        spores: List[Any] = (
-            cast(List[Any], [Damage]) * 7
-            + cast(List[Any], [Life]) * 2
-            + cast(List[Any], [Skill])
-        )
         if self.match():
-            self._content = spores[random.randint(0, len(spores) - 1)]()
+            self._content = Segment.SPORES[random.randint(0, len(Segment.SPORES) - 1)]()
         else:
             self._content = Null()
         return self

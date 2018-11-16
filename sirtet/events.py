@@ -1,7 +1,8 @@
-from typing import NewType
+from typing import NewType, List, Tuple, Any
 
 
 Event = NewType("Event", int)
+Result_Event = NewType("Result_Event", List[Tuple[Event, Any]])
 
 
 class Events:
@@ -17,3 +18,5 @@ class Events:
     MATCH_ROW = Event(8)
     RENDER = Event(9)
     BOTTOMED_PIECE = Event(10)
+    EXIT = Event(11)
+    MATCH_DAMAGE = Event(12)

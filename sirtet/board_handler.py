@@ -4,10 +4,7 @@ from sirtet.board import Board
 from sirtet.matrix import Matrix
 from sirtet.piece import Piece
 from sirtet.shapes import Generator
-from sirtet.events import Event, Events
-
-
-Result_Event = NewType("Result_Event", List[Tuple[Event, Any]])
+from sirtet.events import Event, Events, Result_Event
 
 
 class BoardHandler:
@@ -98,7 +95,7 @@ class BoardHandler:
         result.extend(self.new_piece_at())
         return result
 
-    def event_handler(self, event: Event) -> Result_Event:
+    def event_handler(self, event: Event, data: Any) -> Result_Event:
         bottomed: bool = False
         result: Result_Event = Result_Event([])
         if event == Events.MOVE_DOWN:

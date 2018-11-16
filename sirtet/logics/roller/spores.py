@@ -11,6 +11,9 @@ class Spore:
     def to_string(self) -> str:
         return self.__class__.__name__
 
+    def render(self) -> None:
+        pass
+
 
 class Null(Spore):
     def __init__(self):
@@ -45,3 +48,11 @@ class Skill(Spore):
 
     def __str__(self) -> str:
         return "3"
+
+
+class Outch(Spore):
+    def __init__(self):
+        super(Outch, self).__init__()
+
+    def __str__(self) -> str:
+        return "4"
