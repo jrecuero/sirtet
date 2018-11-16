@@ -11,18 +11,18 @@ class LogicRoller(Logic):
 
     def _process_game_over(self) -> Result_Event:
         result: Result_Event = Result_Event([])
-        print("GAME OVER")
+        # print("GAME OVER")
         result.append((Events.EXIT, None))
         return result
 
     def _process_new_piece(self, piece: Piece) -> Result_Event:
         result: Result_Event = Result_Event([])
-        print(piece)
+        # print(piece)
         return result
 
     def _process_bottomed_piece(self, piece: Piece) -> Result_Event:
         result: Result_Event = Result_Event([])
-        print(piece)
+        # print(piece)
         return result
 
     def _process_match_row(self, rows: List[List[Cell]]) -> Result_Event:
@@ -33,12 +33,12 @@ class LogicRoller(Logic):
             life = spores.count("Life")
             skill = spores.count("Skill")
             outch = spores.count("Outch")
-            print(spores)
-            print(
-                "damage: {} life: {} skill: {} outch: {}".format(
-                    damage, life, skill, outch
-                )
-            )
+            # print(spores)
+            # print(
+            #     "damage: {} life: {} skill: {} outch: {}".format(
+            #         damage, life, skill, outch
+            #     )
+            # )
             result.append(
                 (
                     Events.MATCH_DAMAGE,
@@ -49,5 +49,4 @@ class LogicRoller(Logic):
 
     def _process_render(self) -> Result_Event:
         result: Result_Event = Result_Event([])
-        print("render")
         return result

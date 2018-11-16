@@ -23,22 +23,22 @@ class RollerHandler:
     def start(self) -> None:
         self.bhandler.new_piece_at()
 
-    def render(self) -> None:
-        Cursor.print(Cursor.clear_entire_screen())
-        Cursor.print(Cursor.move_upper_left(0))
-        print()
-        print(
-            "Player: {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+    def render(self, stdscr) -> None:
+        # Cursor.print(Cursor.clear_entire_screen())
+        # Cursor.print(Cursor.move_upper_left(0))
+        stdscr.addstr("\n")
+        stdscr.addstr(
+            "Player: {0:<8} Life: {1:<4} Skil: {2:<4}\n".format(
                 self.player.name, self.player.life, self.player.skill
             )
         )
-        print(
-            "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}".format(
+        stdscr.addstr(
+            "Enemy:  {0:<8} Life: {1:<4} Skil: {2:<4}\n".format(
                 self.enemies[0].name, self.enemies[0].life, self.enemies[0].skill
             )
         )
-        print()
-        print(self.bhandler.board_to_render())
+        stdscr.addstr("\n")
+        stdscr.addstr("{}".format(self.bhandler.board_to_render()))
 
     def _process_match_damage(self, data: Dict) -> Result_Event:
         result: Result_Event = Result_Event([])

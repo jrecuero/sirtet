@@ -102,16 +102,16 @@ class BoardHandler:
             bottomed, result = self.piece_move_down()
         elif event == Events.MOVE_LEFT:
             self.piece_move_left()
-            bottomed, result = self.piece_move_down()
+            # bottomed, result = self.piece_move_down()
         elif event == Events.MOVE_RIGHT:
             self.piece_move_right()
-            bottomed, result = self.piece_move_down()
+            # bottomed, result = self.piece_move_down()
         elif event == Events.ROTATE_CLOCK:
             self.piece_rotate_clockwise()
-            bottomed, result = self.piece_move_down()
+            # bottomed, result = self.piece_move_down()
         elif event == Events.ROTATE_ANTICLOCK:
             self.piece_rotate_anticlockwise()
-            bottomed, result = self.piece_move_down()
+            # bottomed, result = self.piece_move_down()
         if bottomed:
             result.extend(self._process_bottomed())
         return result
