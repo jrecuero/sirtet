@@ -24,8 +24,8 @@ class RollerHandler:
         self.bhandler.new_piece_at()
 
     def render(self) -> None:
-        # Cursor.print(Cursor.clear_entire_screen())
-        # Cursor.print(Cursor.move_upper_left(0))
+        Cursor.print(Cursor.clear_entire_screen())
+        Cursor.print(Cursor.move_upper_left(0))
         print()
         print(
             "Player: {0:<8} Life: {1:<4} Skil: {2:<4}".format(

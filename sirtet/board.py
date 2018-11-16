@@ -70,7 +70,7 @@ class Board:
         for xi, row in enumerate(mat.get_mat()):
             for yi, col in enumerate(row):
                 if not self.mat[x + xi][y + yi].match() and col.match():
-                    self.mat[x + xi][y + yi] = col
+                    self.mat[x + xi][y + yi] = col.clone()
                 # self.mat[x + xi][y + yi].update_with(col)
 
     def clear_with_matrix_at(self, mat: Matrix, pos: Point) -> None:
