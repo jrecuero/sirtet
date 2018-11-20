@@ -1,4 +1,4 @@
-from typing import NewType, List, Any, NoReturn
+from typing import List, Any
 from sirtet.cell import Cell
 from sirtet.piece import Piece
 from sirtet.events import Event, Events, Result_Event

@@ -1,4 +1,4 @@
-from typing import List, NoReturn
+from typing import List
 from sirtet.logic import Logic
 from sirtet.cell import Cell
 from sirtet.piece import Piece

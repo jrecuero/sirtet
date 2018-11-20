@@ -1,4 +1,4 @@
-from typing import NewType, List, Tuple, Any
+from typing import Tuple, Any
 from sirtet.point import Point
 from sirtet.board import Board
 from sirtet.matrix import Matrix
@@ -41,8 +41,8 @@ class BoardHandler:
             board_mat = self.board.get_matrix_at(new_pos)
             if not self.piece.matrix.is_collision_with(board_mat.mat):
                 self.piece.pos = new_pos
-                return False
-        return True
+                return True
+        return False
 
     def piece_move_left(self) -> None:
         new_pos = self.piece.move_left()
@@ -55,7 +55,7 @@ class BoardHandler:
     def piece_move_down(self) -> Tuple[bool, Result_Event]:
         result: Result_Event = Result_Event([])
         new_pos = self.piece.move_down()
-        bottomed = self._piece_move(new_pos)
+        bottomed = not self._piece_move(new_pos)
         if bottomed:
             self.board.update_with_matrix_at(self.piece.matrix, self.piece.pos)
             result.append((Events.BOTTOMED_PIECE, self.piece))

@@ -33,7 +33,7 @@ class Dummy:
         return skill * self.class_skill
 
     def damaged(self, damage: int) -> "Dummy":
-        self.damage -= damage
+        self.life -= damage
         return self
 
     def healed(self, heal: int) -> "Dummy":

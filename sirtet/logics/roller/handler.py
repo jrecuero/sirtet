@@ -1,12 +1,11 @@
-from typing import NewType, List, Any, Dict, cast
+from typing import List, Any, Dict, cast
 from sirtet.point import Point
 from sirtet.board import Board
 from sirtet.shapes import Generator
 from sirtet.events import Event, Events, Result_Event
 from sirtet.board_handler import BoardHandler
-from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.dummy import Dummy
-from sirtet.logics.roller.logic import LogicRoller
+from sirtet.logics.roller.logic import Logic, LogicRoller
 
 # from tools.cursor import Cursor
 
@@ -28,10 +27,17 @@ class RollerHandler:
         # Cursor.print(Cursor.clear_entire_screen())
         # Cursor.print(Cursor.move_upper_left(0))
         # stdscr.addstr("\n")
+        self.screen = stdscr
         stdscr.addstr(0, 0, "Player: {}\n".format(self.player))
         stdscr.addstr(1, 0, "Enemy:  {}\n".format(self.enemies[0]))
-        # stdscr.addstr("\n")
+        stdscr.addstr("\n")
         stdscr.addstr(3, 0, "{}".format(self.bhandler.board_to_render()))
+        # stdscr.addstr(3, 0, "{}".format(self.bhandler.board))
+        # piece = self.bhandler.piece
+        # tokens = str(piece).split("\n")
+        # for i, tok in enumerate(tokens):
+        #     stdscr.addnstr(3 + i + piece.pos.x, 2 + piece.pos.y, "{}".format(tok), 6)
+        # stdscr.addstr(30, 0, "")
 
     def _process_match_damage(self, data: Dict) -> Result_Event:
         result: Result_Event = Result_Event([])

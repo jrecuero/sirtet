@@ -61,6 +61,7 @@ def main(stdscr):
             counter = 0
         else:
             counter += 1
+        # h.event_handler(Events.MOVE_DOWN)
 
 
 if __name__ == "__main__":

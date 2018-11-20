@@ -11,3 +11,6 @@ class Point:
 
     def move_down(self) -> "Point":
         return Point(self.x + 1, self.y)
+
+    def __str__(self) -> str:
+        return "({}, {})".format(self.x, self.y)

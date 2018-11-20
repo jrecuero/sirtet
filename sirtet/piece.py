@@ -21,3 +21,6 @@ class Piece:
 
     def rotate_anticlockwise(self) -> Matrix:
         return self.matrix.rotate_anticlockwise()
+
+    def __str__(self) -> str:
+        return "\n".join(["".join(str(_) for _ in row) for row in self.matrix.mat])
