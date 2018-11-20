@@ -1,11 +1,12 @@
 from typing import List, Any, Dict, cast
 from sirtet.point import Point
 from sirtet.board import Board
+from sirtet.cell import Cell
 from sirtet.shapes import Generator
 from sirtet.events import Event, Events, Result_Event
+from sirtet.piece import Piece
 from sirtet.board_handler import BoardHandler
 from sirtet.logics.roller.dummy import Dummy
-from sirtet.logics.roller.logic import Logic, LogicRoller
 
 # from tools.cursor import Cursor
 
@@ -13,7 +14,6 @@ from sirtet.logics.roller.logic import Logic, LogicRoller
 class RollerHandler:
     def __init__(self):
         self.bhandler: BoardHandler = BoardHandler()
-        self.logic: Logic = LogicRoller()
         self.player: Dummy = None
         self.enemies: List[Dummy] = []
 
@@ -47,6 +47,48 @@ class RollerHandler:
         self.player.damaged(self.enemies[0].get_damage(data["outch"]))
         return result
 
+    def _process_game_over(self) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        # print("GAME OVER")
+        result.append((Events.EXIT, None))
+        return result
+
+    def _process_new_piece(self, piece: Piece) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        # print(piece)
+        return result
+
+    def _process_bottomed_piece(self, piece: Piece) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        # print(piece)
+        return result
+
+    def _process_match_row(self, rows: List[List[Cell]]) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        for row in rows:
+            spores = [cell._content.__class__.__name__ for cell in row]
+            damage = spores.count("Damage")
+            life = spores.count("Life")
+            skill = spores.count("Skill")
+            outch = spores.count("Outch")
+            # print(spores)
+            # print(
+            #     "damage: {} life: {} skill: {} outch: {}".format(
+            #         damage, life, skill, outch
+            #     )
+            # )
+            result.append(
+                (
+                    Events.MATCH_DAMAGE,
+                    {"damage": damage, "life": life, "skill": skill, "outch": outch},
+                )
+            )
+        return result
+
+    def _process_render(self) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        return result
+
     def event_handler(self, event: Event, data: Any = None) -> None:
         result: Result_Event = Result_Event([])
         if event in [
@@ -57,18 +99,20 @@ class RollerHandler:
             Events.ROTATE_CLOCK,
         ]:
             result = self.bhandler.event_handler(event, data)
-        elif event in [
-            Events.GAME_OVER,
-            Events.NEW_PIECE,
-            Events.MATCH_ROW,
-            Events.RENDER,
-            Events.BOTTOMED_PIECE,
-        ]:
-            result = self.logic.event_handler(event, data)
-        elif event == Events.EXIT:
-            exit(0)
+        elif event == Events.BOTTOMED_PIECE:
+            result = self._process_bottomed_piece(cast(Piece, data))
+        elif event == Events.NEW_PIECE:
+            result = self._process_new_piece(cast(Piece, data))
+        elif event == Events.MATCH_ROW:
+            result = self._process_match_row(data)
         elif event == Events.MATCH_DAMAGE:
             result = self._process_match_damage(cast(Dict, data))
+        elif event == Events.RENDER:
+            result = self._process_render()
+        elif event == Events.GAME_OVER:
+            result = self._process_game_over()
+        elif event == Events.EXIT:
+            exit(0)
         else:
             assert False, "Unknown event"
         # fallback any events returned by local handlers.
