@@ -102,29 +102,27 @@ class BoardHandler:
             bottomed, result = self.piece_move_down()
         elif event == Events.MOVE_LEFT:
             self.piece_move_left()
-            # bottomed, result = self.piece_move_down()
         elif event == Events.MOVE_RIGHT:
             self.piece_move_right()
-            # bottomed, result = self.piece_move_down()
         elif event == Events.ROTATE_CLOCK:
             self.piece_rotate_clockwise()
-            # bottomed, result = self.piece_move_down()
         elif event == Events.ROTATE_ANTICLOCK:
             self.piece_rotate_anticlockwise()
-            # bottomed, result = self.piece_move_down()
+        elif event == Events.RENDER_ASCII:
+            result = self.render_ascii(data)
         if bottomed:
             result.extend(self._process_bottomed())
         return result
 
-    def board_to_render(self) -> Board:
+    def board_to_render_ascii(self) -> Board:
         b = self.board.clone()
         if self.piece.pos:
             b.update_with_matrix_at(self.piece.matrix, self.piece.pos)
         return b
 
-    def render(self) -> Result_Event:
+    def render_ascii(self, screen: Any) -> Result_Event:
         result: Result_Event = Result_Event([])
-        b = self.board_to_render()
+        b = self.board_to_render_ascii()
         result.append((Events.RENDER, None))
-        b.render()
+        b.render_ascii(screen)
         return result

@@ -23,8 +23,8 @@ class Cell:
     def __str__(self) -> str:
         return str(self._content)
 
-    def render(self) -> None:
-        pass
+    def render_ascii(self, screen: Any) -> None:
+        screen.addstr("{}".format(self))
 
     def to_string(self) -> str:
         return self._content.to_string()

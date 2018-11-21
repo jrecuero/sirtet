@@ -11,7 +11,9 @@
 
 
 class Dummy:
-    def __init__(self, name: str, life: int, damage: int, skill: int):
+    def __init__(
+        self, name: str, life: int, damage: int, skill: int, player: bool = False
+    ):
         self.name: str = name
         self.description: str = ""
         self.damage: int = damage
@@ -22,6 +24,7 @@ class Dummy:
         self.class_damage: int = 1
         self.class_life: int = 1
         self.class_skill: int = 1
+        self.__player: bool = player
 
     def get_damage(self, damage: int) -> int:
         return damage * self.class_damage * self.damage
@@ -49,6 +52,17 @@ class Dummy:
         return self
 
     def __str__(self) -> str:
-        return "{0:<8} Life: {1:<4} Skil: {2:<4}".format(
-            self.name, self.life, self.skill
+        return "{:<8}\n{} {:>3}/{:<3} [{}]\n{} {:>3}/{:<3} [{}]\n{} {:>3}     [{}]".format(
+            self.name,
+            chr(9825),
+            self.life,
+            self.__max_life,
+            self.class_life,
+            chr(9733),
+            self.skill,
+            self.__max_skill,
+            self.class_skill,
+            chr(9784) if self.__player else chr(9763),
+            self.damage,
+            self.class_damage,
         )

@@ -24,8 +24,10 @@ class Block(Int):
     def __str__(self) -> str:
         if self._content == 0:
             # return "."
-            return "  "
+            # return "  "
+            return " "
         # return str(self._content)
         # return chr(9608)
-        return "{}{}".format(chr(9608), chr(9608))
+        # return "{}{}".format(chr(9608), chr(9608))
+        return "{}".format(chr(9608))
         # return chr(9209)

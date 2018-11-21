@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Any
 from sirtet.cell import Cell
 from sirtet.point import Point
 from sirtet.matrix import Mat, Matrix
@@ -114,7 +114,7 @@ class Board:
     def __str__(self) -> str:
         return "\n".join(["".join(str(_) for _ in row) for row in self.mat])
 
-    def render(self) -> None:
+    def render_ascii(self, screen: Any) -> None:
         for row in self.mat:
             for cell in row:
-                cell.render()
+                cell.render_ascii(screen)

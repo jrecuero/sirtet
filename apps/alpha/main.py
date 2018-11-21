@@ -30,13 +30,14 @@ def main(stdscr):
 
     h = RollerHandler()
     h.setup(BoardText(), Generator(Segment), Point(0, 1))
-    h.player = Dummy("ME", 100, 1, 100)
-    h.enemies.append(Dummy("ORC", 50, 1, 10))
+    h.player = Dummy("ME", 100, 1, 100, True)
+    h.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(2)]
     h.start()
     counter = 0
     while True:
         stdscr.clear()
-        h.render(stdscr)
+        # h.render(stdscr)
+        h.event_handler(Events.RENDER_ASCII, stdscr)
         stdscr.addstr("\n")
         # key = input("Enter: ").lower()
         key = stdscr.getch()
