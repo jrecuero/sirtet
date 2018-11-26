@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 import curses
 import time
 from engine.scene import Scene
@@ -45,7 +45,13 @@ class Handler:
     def render(self):
         self.screen.addstr(0, 0, "Handler Rendering")
         if self.iscene != -1:
-            self.scenes[self.iscene].render()
+            self.scenes[self.iscene].render(self.screen)
+        self.screen.addstr(2, 5, "Handler Rendering")
+
+    def new_scene(self) -> Tuple[Scene, int]:
+        scn = Scene()
+        iscn = self.add_scene(scn)
+        return scn, iscn
 
     def add_scene(self, scn: Scene) -> int:
         self.scenes.append(scn)
