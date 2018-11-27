@@ -83,7 +83,6 @@ class RollerHandler:
         result: Result_Event = Result_Event([])
         screen.addstr(0, 0, "Player: {}\n".format(self.player))
         screen.addstr(5, 0, "Enemy:  {}\n".format(self.enemies[self.ienemy]))
-        # screen.addstr("\n")
         screen.addstr(10, 0, "{}".format(self.bhandler.board_to_render_ascii()))
         return result
 
