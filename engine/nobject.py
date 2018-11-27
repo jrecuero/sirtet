@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 
 class NObject:
@@ -29,14 +29,14 @@ class Block(NObject):
         super(Block, self).__init__(y, x, 0, 0)
         self.block = block
 
-    def render(self, screen):
+    def render(self, screen: Any):
         tokens = self.block.split("\n")
         for y, tok in enumerate(tokens):
             screen.addstr(self.y + y, self.x, tok, len(tok))
 
 
 class Box(NObject):
-    def render(self, screen):
+    def render(self, screen: Any):
         for x in range(1, self.dx):
             screen.addch(self.y, self.x + x, chr(9473))
         for x in range(1, self.dx):
@@ -51,12 +51,23 @@ class Box(NObject):
         screen.addch(self.y + self.dy, self.x + self.dx - 1, chr(9499))
 
 
+class Caller(NObject):
+    def __init__(self, y: int, x: int, caller: Any):
+        super(Caller, self).__init__(y, x, -1, -1)
+        self.caller = caller
+
+    def render(self, screen: Any):
+        tokens = str(self.caller()).split("\n")
+        for y, tok in enumerate(tokens):
+            screen.addstr(self.y + y, self.x, tok, len(tok))
+
+
 class Input(NObject):
     def __init__(self, y: int, x: int, message: str):
         super(Input, self).__init__(y, x, 1, len(message))
         self.message: str = message
         self.input: Optional[str] = None
 
-    def render(self, screen):
+    def render(self, screen: Any):
         screen.addstr(self.y, self.x, self.message, self.dx)
         self.input = screen.getstr(self.y, self.x + self.dx)

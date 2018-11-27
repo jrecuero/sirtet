@@ -38,12 +38,10 @@ class SceneMain(Scene):
 if __name__ == "__main__":
     h = Handler()
     scn = SceneMain()
-    scn.name = "Main Scene"
     scn.add_object(Box(0, 0, 2, len("Engine Example") + 2))
     scn.add_object(String(1, 1, "Engine Example"))
     # scn.add_object(Block(3, 0, "Line #1\nLine #2\nLine #3"))
     # scn.add_object(Block(3, 10, "Jose Carlos\nRecuero Arias\n51"))
     h.add_scene(scn)
     scn.timer = h.new_timer(100)
-    scn.timer.enable()
     h.run()

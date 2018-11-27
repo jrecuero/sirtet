@@ -82,8 +82,10 @@ class Handler:
             self.render()
             self.__loop()
 
-    def new_timer(self, timeout: int) -> Timer:
+    def new_timer(self, timeout: int, enable: bool = True) -> Timer:
         t = Timer(timeout)
+        if enable:
+            t.enable()
         self.timers.append(t)
         return t
 
