@@ -1,4 +1,5 @@
 from typing import Optional, Any
+import curses
 
 
 class NObject:
@@ -70,4 +71,8 @@ class Input(NObject):
 
     def render(self, screen: Any):
         screen.addstr(self.y, self.x, self.message, self.dx)
-        self.input = screen.getstr(self.y, self.x + self.dx)
+        screen.nodelay(False)
+        curses.echo()
+        self.input = screen.getstr(self.y, self.x + self.dx).decode("utf-8")
+        screen.nodelay(True)
+        curses.noecho()

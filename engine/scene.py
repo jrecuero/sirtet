@@ -8,6 +8,9 @@ class Scene:
         self.nobjects: List[NObject] = []
         self.enable: bool = True
 
+    def setup(self):
+        pass
+
     def update(self, *events):
         pass
 

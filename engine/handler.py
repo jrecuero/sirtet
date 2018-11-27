@@ -5,19 +5,14 @@ from engine.scene import Scene
 
 EVT_ENG_KEY: int = 100
 EVT_ENG_TIMER: int = 200
+EVT_ENG_INPUT: int = 300
 
 
 class Timer:
-    def __init__(self, timeout: int):
+    def __init__(self, timeout: int, enable: bool = True):
         self.timeout: int = timeout
         self.__counter: int = 0
-        self.__enable: bool = False
-
-    def enable(self) -> None:
-        self.__enable = True
-
-    def disable(self) -> None:
-        self.__enable = False
+        self.enable: bool = enable
 
     def inc(self) -> bool:
         if self.enable:
@@ -83,9 +78,10 @@ class Handler:
             self.__loop()
 
     def new_timer(self, timeout: int, enable: bool = True) -> Timer:
-        t = Timer(timeout)
-        if enable:
-            t.enable()
+        t = Timer(timeout, enable)
+        return self.add_timer(t)
+
+    def add_timer(self, t: Timer) -> Timer:
         self.timers.append(t)
         return t
 
@@ -97,10 +93,14 @@ class Handler:
         return self.add_scene(scn)
 
     def add_scene(self, scn: Scene) -> Scene:
+        scn.setup()
         self.scenes.append(scn)
         if self.iscene == -1:
             self.iscene = len(self.scenes) - 1
         return scn
+
+    def del_scene(self, scn: Scene) -> None:
+        self.scenes.remove(scn)
 
     def next_scene(self) -> int:
         self.iscene += 1
@@ -122,10 +122,7 @@ class Handler:
                 return s
         return None
 
-    def del_scene(self, scn: Scene) -> None:
-        self.scenes.remove(scn)
-
-    def init(self):
+    def setup(self):
         pass
 
     def update(self):

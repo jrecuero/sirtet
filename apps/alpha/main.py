@@ -30,6 +30,9 @@ class BoardText(Board):
 class SceneSirtet(Scene):
     def __init__(self):
         super(SceneSirtet, self).__init__("Sirtet")
+        self.rh: RollerHandler
+
+    def setup(self):
         self.rh = RollerHandler()
         self.rh.setup(BoardText(), Generator(Segment), Point(0, 4))
         self.rh.player = Dummy("ME", 100, 1, 100, True)
