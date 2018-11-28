@@ -1,5 +1,6 @@
 from typing import List, Any
 from engine.nobject import NObject
+from engine.event import Event
 
 
 class Scene:
@@ -11,12 +12,14 @@ class Scene:
     def setup(self):
         pass
 
-    def update(self, *events):
+    def update(self, *events: Event):
         pass
 
-    def render(self, screen: Any) -> None:
+    def render(self, screen: Any) -> List[Event]:
+        events: List[Event] = []
         for obj in self.nobjects:
-            obj.render(screen)
+            events.extend(obj.render(screen))
+        return events
 
     def add_object(self, obj: NObject) -> bool:
         self.nobjects.append(obj)

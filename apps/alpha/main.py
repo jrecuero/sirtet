@@ -12,7 +12,8 @@ from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
 from sirtet.logics.roller.dummy import Dummy
 from engine.nobject import Caller
-from engine.handler import Handler, EVT_ENG_KEY, EVT_ENG_TIMER
+from engine.handler import Handler
+from engine.event import EVT_ENG_KEY, EVT_ENG_TIMER
 from engine.scene import Scene
 
 
