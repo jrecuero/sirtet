@@ -3,16 +3,46 @@ import curses
 from engine.event import Event, EventInput
 
 
+def update(f):
+    def _update(self: "NObject") -> List[Event]:
+        if self.enable:
+            return f(self)
+        return []
+
+    return _update
+
+
+def render(f):
+    def _render(self: "NObject", screen: Any) -> List[Event]:
+        if self.visible:
+            return f(self, screen)
+        return []
+
+    return _render
+
+
 class NObject:
     def __init__(self, y: int, x: int, height: int, width: int):
         self.y: int = y
         self.x: int = x
         self.dy: int = height
         self.dx: int = width
+        self.enable: bool = True
+        self.visible: bool = True
 
-    def update(self):
-        pass
+    def activate(self):
+        self.enable = True
+        self.visible = True
 
+    def deactivate(self):
+        self.enable = False
+        self.visible = False
+
+    @update
+    def update(self) -> List[Event]:
+        return []
+
+    @render
     def render(self, screen) -> List[Event]:
         return []
 
@@ -22,6 +52,7 @@ class String(NObject):
         super(String, self).__init__(y, x, 1, len(message))
         self.message = message
 
+    @render
     def render(self, screen) -> List[Event]:
         screen.addstr(self.y, self.x, self.message, self.dx)
         return []
@@ -32,6 +63,7 @@ class Block(NObject):
         super(Block, self).__init__(y, x, 0, 0)
         self.block = block
 
+    @render
     def render(self, screen) -> List[Event]:
         tokens = self.block.split("\n")
         for y, tok in enumerate(tokens):
@@ -40,6 +72,7 @@ class Block(NObject):
 
 
 class Box(NObject):
+    @render
     def render(self, screen) -> List[Event]:
         for x in range(1, self.dx):
             screen.addch(self.y, self.x + x, chr(9473))
@@ -69,6 +102,7 @@ class BoxText(NObject):
                     self.dx = len(t)
             self.dx += 2
 
+    @render
     def render(self, screen) -> List[Event]:
         for x in range(1, self.dx):
             screen.addch(self.y, self.x + x, chr(9473))
@@ -93,6 +127,7 @@ class Caller(NObject):
         super(Caller, self).__init__(y, x, -1, -1)
         self.caller = caller
 
+    @render
     def render(self, screen) -> List[Event]:
         tokens = str(self.caller()).split("\n")
         for y, tok in enumerate(tokens):
@@ -106,6 +141,7 @@ class Input(NObject):
         self.message: str = message
         self.input_str: Optional[str] = None
 
+    @render
     def render(self, screen) -> List[Event]:
         screen.addstr(self.y, self.x, self.message, self.dx)
         screen.nodelay(False)

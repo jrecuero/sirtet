@@ -3,6 +3,11 @@ from typing import Optional
 EVT_ENG_KEY: int = 100
 EVT_ENG_TIMER: int = 200
 EVT_ENG_INPUT: int = 300
+EVT_SCN_ISCENE: int = 400
+EVT_SCN_NEXT_SCENE: int = 401
+EVT_SCN_PREV_SCENE: int = 402
+EVT_SCN_FIRST_SCENE: int = 403
+EVT_SCN_LAST_SCENE: int = 404
 
 
 class Timer:
@@ -40,6 +45,11 @@ class Event:
             return self.params.get("input_str", None)
         return None
 
+    def get_iscene(self) -> Optional[int]:
+        if self.evt == EVT_SCN_ISCENE:
+            return self.params.get("iscene", None)
+        return None
+
 
 class EventKey(Event):
     def __init__(self, key: int):
@@ -54,3 +64,28 @@ class EventTimer(Event):
 class EventInput(Event):
     def __init__(self, data: str):
         super(EventInput, self).__init__(EVT_ENG_INPUT, input_str=data)
+
+
+class EventIScene(Event):
+    def __init__(self, iscene: int):
+        super(EventIScene, self).__init__(EVT_SCN_ISCENE, iscene=iscene)
+
+
+class EventNextScene(Event):
+    def __init__(self):
+        super(EventNextScene, self).__init__(EVT_SCN_NEXT_SCENE)
+
+
+class EventPrevScene(Event):
+    def __init__(self):
+        super(EventPrevScene, self).__init__(EVT_SCN_PREV_SCENE)
+
+
+class EventFirstScene(Event):
+    def __init__(self):
+        super(EventFirstScene, self).__init__(EVT_SCN_FIRST_SCENE)
+
+
+class EventLastScene(Event):
+    def __init__(self):
+        super(EventLastScene, self).__init__(EVT_SCN_LAST_SCENE)

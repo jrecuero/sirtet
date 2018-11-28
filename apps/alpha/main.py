@@ -1,5 +1,3 @@
-# import time
-import curses
 from sirtet.cell import Cell
 from sirtet.point import Point
 from sirtet.matrix import Mat
@@ -14,7 +12,7 @@ from sirtet.logics.roller.dummy import Dummy
 from engine.nobject import Caller
 from engine.handler import Handler
 from engine.event import EVT_ENG_KEY, EVT_ENG_TIMER
-from engine.scene import Scene
+from engine.scene import Scene, update
 
 
 class BoardText(Board):
@@ -29,22 +27,20 @@ class BoardText(Board):
 
 
 class SceneSirtet(Scene):
-    def __init__(self):
+    def __init__(self, game: RollerHandler):
         super(SceneSirtet, self).__init__("Sirtet")
-        self.rh: RollerHandler
+        self.rh: RollerHandler = game
 
     def setup(self):
-        self.rh = RollerHandler()
-        self.rh.setup(BoardText(), Generator(Segment), Point(0, 4))
-        self.rh.player = Dummy("ME", 100, 1, 100, True)
-        self.rh.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(2)]
         self.add_object(Caller(0, 0, lambda: "Player: {}\n".format(self.rh.player)))
         self.add_object(
             Caller(5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy]))
         )
         self.add_object(Caller(10, 0, self.rh.bhandler.board_to_render_ascii))
+        self.new_timer(100)
         self.rh.start()
 
+    @update
     def update(self, *events):
         for event in events:
             if event.evt == EVT_ENG_KEY:
@@ -66,12 +62,20 @@ class SceneSirtet(Scene):
                 self.rh.event_handler(Events.MOVE_DOWN)
 
 
-def main(stdscr):
+def create_game() -> RollerHandler:
+    rh = RollerHandler()
+    rh.setup(BoardText(), Generator(Segment), Point(0, 4))
+    rh.player = Dummy("ME", 100, 1, 100, True)
+    rh.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(2)]
+    return rh
+
+
+def main():
     h = Handler()
-    h.add_scene(SceneSirtet())
-    h.new_timer(100)
+    game = create_game()
+    h.add_scene(SceneSirtet(game))
     h.run()
 
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    main()

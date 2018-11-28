@@ -3,6 +3,11 @@ import curses
 import time
 from engine.scene import Scene
 from engine.event import Timer, Event, EventKey, EventTimer
+from engine.event import EVT_SCN_ISCENE
+from engine.event import EVT_SCN_NEXT_SCENE
+from engine.event import EVT_SCN_PREV_SCENE
+from engine.event import EVT_SCN_FIRST_SCENE
+from engine.event import EVT_SCN_LAST_SCENE
 
 
 class Handler:
@@ -29,7 +34,7 @@ class Handler:
         self.screen.nodelay(True)
         curses.curs_set(False)
         while True:
-            self.screen.clear()
+            self.screen.erase()
             self.update()
             self.render()
             self.__loop()
@@ -59,25 +64,43 @@ class Handler:
     def del_scene(self, scn: Scene) -> None:
         self.scenes.remove(scn)
 
-    def next_scene(self) -> int:
-        self.iscene += 1
-        return self.iscene
-
-    def prev_scene(self) -> int:
-        self.iscene -= 1
-        return self.iscene
-
     def get_scene(self) -> Optional[Scene]:
         if self.iscene != -1:
             return self.scenes[self.iscene]
         return None
 
-    def to_scene(self, scn: Scene) -> Optional[Scene]:
+    def _move_to_scene(self, iscene: int) -> int:
+        if self.iscene != -1:
+            old_scene = self.scenes[self.iscene]
+            old_scene.deactivate()
+        self.iscene = iscene
+        new_scene = self.scenes[self.iscene]
+        new_scene.activate()
+        return self.iscene
+
+    def set_iscene(self, iscene: int = 0) -> Optional[Scene]:
+        self.iscene = iscene
+        return self.scenes[self.iscene]
+
+    def set_scene(self, scn: Scene) -> Optional[Scene]:
         for i, s in enumerate(self.scenes):
             if s == scn:
-                self.iscene = i
+                self._move_to_scene(i)
                 return s
         return None
+
+    def next_scene(self) -> int:
+        return self._move_to_scene(self.iscene + 1)
+
+    def prev_scene(self) -> int:
+        return self._move_to_scene(self.iscene - 1)
+
+    def set_scene_first(self) -> Optional[Scene]:
+        return self.set_iscene()
+
+    def set_scene_last(self) -> Optional[Scene]:
+        last = len(self.scenes) - 1
+        return self.set_iscene(last)
 
     def setup(self):
         pass
@@ -92,7 +115,18 @@ class Handler:
             for t in self.timers:
                 if t.inc():
                     events.append(EventTimer(t))
-            self.scenes[self.iscene].update(*events)
+            update_events = self.scenes[self.iscene].update(*events)
+            for upd_event in update_events:
+                if upd_event.evt == EVT_SCN_ISCENE:
+                    self.set_iscene(upd_event.get_iscene())
+                elif upd_event.evt == EVT_SCN_NEXT_SCENE:
+                    self.next_scene()
+                elif upd_event.evt == EVT_SCN_PREV_SCENE:
+                    self.prev_scene()
+                elif upd_event.evt == EVT_SCN_FIRST_SCENE:
+                    self.first_scene()
+                elif upd_event.evt == EVT_SCN_LAST_SCENE:
+                    self.last_scene()
 
     def render(self):
         if self.iscene != -1:

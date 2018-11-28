@@ -1,7 +1,9 @@
+from typing import List
 from engine.nobject import Box, String, Block, Input, BoxText
-from engine.event import Event, EVT_ENG_KEY, EVT_ENG_TIMER, EVT_ENG_INPUT
+from engine.event import Event, EventNextScene
+from engine.event import EVT_ENG_KEY, EVT_ENG_TIMER, EVT_ENG_INPUT
 from engine.handler import Handler
-from engine.scene import Scene
+from engine.scene import Scene, update
 
 
 class SceneMain(Scene):
@@ -17,9 +19,10 @@ class SceneMain(Scene):
         self.add_object(String(1, 1, "Engine Example"))
         self.input_obj = Input(3, 0, "Name: ")
         self.add_object(self.input_obj)
-        self.timer = h.new_timer(100)
 
-    def update(self, *events: Event):
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        event_to_return = []
         for event in events:
             if event.evt == EVT_ENG_KEY:
                 key = event.get_key()
@@ -40,6 +43,10 @@ class SceneMain(Scene):
                         if self.tmp[1] is not None:
                             self.del_object(self.tmp[1])
                             self.tmp[1] = None
+                    elif key == ord("z"):
+                        self.enable = False
+                    elif key == ord("n"):
+                        event_to_return.append(EventNextScene())
             elif event.evt == EVT_ENG_TIMER:
                 self.t_counter += 1
                 self.add_object(
@@ -50,9 +57,30 @@ class SceneMain(Scene):
                 self.add_object(BoxText(3, 0, "Your name is {}".format(msg)))
                 self.del_object(self.input_obj)
                 self.input_obj = None
+                self.timer = self.new_timer(100)
+            else:
+                event_to_return.append(event)
+        return event_to_return
+
+
+class SceneLast(Scene):
+    def setup(self):
+        self.add_object(String(0, 0, "last page"))
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        event_to_return = []
+        for event in events:
+            if event.evt == EVT_ENG_KEY:
+                key = event.get_key()
+                if key is not None:
+                    if key == ord("x"):
+                        exit(0)
+        return event_to_return
 
 
 if __name__ == "__main__":
     h = Handler()
     h.add_scene(SceneMain())
+    h.add_scene(SceneLast())
     h.run()
