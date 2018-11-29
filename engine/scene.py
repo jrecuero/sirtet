@@ -11,7 +11,9 @@ def update(f):
                 if t.inc():
                     new_events.append(EventTimer(t))
             new_events.extend(self.update_objects(*new_events))
-            return f(self, *new_events)
+            result = f(self, *new_events)
+            if result is not None:
+                return result
         return []
 
     return _update
@@ -21,7 +23,9 @@ def render(f):
     def _render(self: "Scene", screen: Any) -> List[Event]:
         if self.visible:
             new_events = self.render_objects(screen)
-            new_events.extend(f(self, screen))
+            result = f(self, screen)
+            if result is not None:
+                new_events.extend(result)
             return new_events
         return []
 

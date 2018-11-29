@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, List, Callable, Optional
 
 
 class EVT:
@@ -55,6 +55,10 @@ class Event:
             return self.params.get("iscene", None)
         return None
 
+    def exit_on_key(self, key: str):
+        if self.evt == EVT.ENG.KEY and self.get_key() == ord(key):
+            exit(0)
+
 
 class EventKey(Event):
     def __init__(self, key: int):
@@ -94,3 +98,17 @@ class EventFirstScene(Event):
 class EventLastScene(Event):
     def __init__(self):
         super(EventLastScene, self).__init__(EVT.SCN.LAST_SCENE)
+
+
+class KeyHandler:
+    def __init__(self, keyreg: Dict[str, Callable[[], List[Event]]]):
+        self.keyreg = keyreg
+
+    def update(self, event: Event) -> List[Event]:
+        event_to_return: List[Event] = []
+        if event.evt == EVT.ENG.KEY and event.get_key() is not None:
+            key = event.get_key()
+            for k, cb in self.keyreg.items():
+                if key == ord(k):
+                    return cb()
+        return event_to_return

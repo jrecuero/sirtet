@@ -6,7 +6,9 @@ from engine.event import Event, EventInput, Timer, EVT
 def update(f):
     def _update(self: "NObject", *events: Event) -> List[Event]:
         if self.enable:
-            return f(self, *events)
+            result = f(self, *events)
+            if result is not None:
+                return result
         return []
 
     return _update
@@ -15,7 +17,9 @@ def update(f):
 def render(f):
     def _render(self: "NObject", screen: Any) -> List[Event]:
         if self.visible:
-            return f(self, screen)
+            result = f(self, screen)
+            if result is not None:
+                return result
         return []
 
     return _render
@@ -123,17 +127,45 @@ class BoxText(NObject):
 
 
 class FlashText(String):
-    def __init__(self, y: int, x: int, message: str, t: Timer):
-        super(FlashText, self).__init__(y, x, message)
+    def __init__(self, y: int, x: int, msg: str, t: Timer, on: int = 1, off: int = 1):
+        super(FlashText, self).__init__(y, x, msg)
         self.__timer = t
-        self.__shadow = message
+        self.__shadow = msg
+        self.__on = on
+        self.__on_counter = 0
+        self.__off = off
+        self.__off_counter = 0
 
     @update
     def update(self, *events: Event) -> List[Event]:
         for event in events:
             if event.evt == EVT.ENG.TIMER:
                 if event.get_timer() == self.__timer:
-                    self.message = self.__shadow if self.message == "" else ""
+                    if self.message == "":
+                        self.__off_counter += 1
+                        if self.__off_counter == self.__off:
+                            self.__off_counter = 0
+                            self.message = self.__shadow
+                    else:
+                        self.__on_counter += 1
+                        if self.__on_counter == self.__on:
+                            self.__on_counter = 0
+                            self.message = ""
+        return []
+
+
+class TimeUpdater(String):
+    def __init__(self, y: int, x: int, msg: str, t: Timer, caller: Any):
+        super(TimeUpdater, self).__init__(y, x, msg)
+        self.__timer = t
+        self.__caller = caller
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        for event in events:
+            if event.evt == EVT.ENG.TIMER:
+                if event.get_timer() == self.__timer:
+                    self.message = self.__caller(self.message)
         return []
 
 
