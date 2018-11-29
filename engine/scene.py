@@ -10,7 +10,7 @@ def update(f):
             for t in self.timers:
                 if t.inc():
                     new_events.append(EventTimer(t))
-            new_events.extend(self.update_objects())
+            new_events.extend(self.update_objects(*new_events))
             return f(self, *new_events)
         return []
 
@@ -47,11 +47,11 @@ class Scene:
     def setup(self):
         pass
 
-    def update_objects(self) -> List[Event]:
-        events: List[Event] = []
+    def update_objects(self, *events: Event) -> List[Event]:
+        new_events: List[Event] = []
         for obj in self.nobjects:
-            events.extend(obj.update())
-        return events
+            new_events.extend(obj.update(*events))
+        return new_events
 
     def render_objects(self, screen: Any) -> List[Event]:
         events: List[Event] = []

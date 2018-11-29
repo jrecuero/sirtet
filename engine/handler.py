@@ -3,11 +3,7 @@ import curses
 import time
 from engine.scene import Scene
 from engine.event import Timer, Event, EventKey, EventTimer
-from engine.event import EVT_SCN_ISCENE
-from engine.event import EVT_SCN_NEXT_SCENE
-from engine.event import EVT_SCN_PREV_SCENE
-from engine.event import EVT_SCN_FIRST_SCENE
-from engine.event import EVT_SCN_LAST_SCENE
+from engine.event import EVT
 
 
 class Handler:
@@ -117,15 +113,15 @@ class Handler:
                     events.append(EventTimer(t))
             update_events = self.scenes[self.iscene].update(*events)
             for upd_event in update_events:
-                if upd_event.evt == EVT_SCN_ISCENE:
+                if upd_event.evt == EVT.SCN.ISCENE:
                     self.set_iscene(upd_event.get_iscene())
-                elif upd_event.evt == EVT_SCN_NEXT_SCENE:
+                elif upd_event.evt == EVT.SCN.NEXT_SCENE:
                     self.next_scene()
-                elif upd_event.evt == EVT_SCN_PREV_SCENE:
+                elif upd_event.evt == EVT.SCN.PREV_SCENE:
                     self.prev_scene()
-                elif upd_event.evt == EVT_SCN_FIRST_SCENE:
+                elif upd_event.evt == EVT.SCN.FIRST_SCENE:
                     self.first_scene()
-                elif upd_event.evt == EVT_SCN_LAST_SCENE:
+                elif upd_event.evt == EVT.SCN.LAST_SCENE:
                     self.last_scene()
 
     def render(self):

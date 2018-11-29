@@ -1,12 +1,12 @@
 from typing import Optional, Any, List
 import curses
-from engine.event import Event, EventInput
+from engine.event import Event, EventInput, Timer, EVT
 
 
 def update(f):
-    def _update(self: "NObject") -> List[Event]:
+    def _update(self: "NObject", *events: Event) -> List[Event]:
         if self.enable:
-            return f(self)
+            return f(self, *events)
         return []
 
     return _update
@@ -39,7 +39,7 @@ class NObject:
         self.visible = False
 
     @update
-    def update(self) -> List[Event]:
+    def update(self, *events: Event) -> List[Event]:
         return []
 
     @render
@@ -119,6 +119,21 @@ class BoxText(NObject):
         tokens = self.message.split("\n")
         for y, tok in enumerate(tokens):
             screen.addstr(self.y + 1 + y, self.x + 1, tok, len(tok))
+        return []
+
+
+class FlashText(String):
+    def __init__(self, y: int, x: int, message: str, t: Timer):
+        super(FlashText, self).__init__(y, x, message)
+        self.__timer = t
+        self.__shadow = message
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        for event in events:
+            if event.evt == EVT.ENG.TIMER:
+                if event.get_timer() == self.__timer:
+                    self.message = self.__shadow if self.message == "" else ""
         return []
 
 

@@ -1,7 +1,6 @@
 from typing import List
-from engine.nobject import Box, String, Block, Input, BoxText
-from engine.event import Event, EventNextScene
-from engine.event import EVT_ENG_KEY, EVT_ENG_TIMER, EVT_ENG_INPUT
+from engine.nobject import Box, String, Block, Input, BoxText, FlashText
+from engine.event import Event, EventNextScene, EVT
 from engine.handler import Handler
 from engine.scene import Scene, update
 
@@ -24,7 +23,7 @@ class SceneMain(Scene):
     def update(self, *events: Event) -> List[Event]:
         event_to_return = []
         for event in events:
-            if event.evt == EVT_ENG_KEY:
+            if event.evt == EVT.ENG.KEY:
                 key = event.get_key()
                 if key is not None:
                     if key == ord("x"):
@@ -47,12 +46,13 @@ class SceneMain(Scene):
                         self.enable = False
                     elif key == ord("n"):
                         event_to_return.append(EventNextScene())
-            elif event.evt == EVT_ENG_TIMER:
-                self.t_counter += 1
-                self.add_object(
-                    String(9, 0, "Timeout expired: {}".format(self.t_counter))
-                )
-            elif event.evt == EVT_ENG_INPUT:
+            elif event.evt == EVT.ENG.TIMER:
+                if event.get_timer() == self.timer:
+                    self.t_counter += 1
+                    self.add_object(
+                        String(9, 0, "Timeout expired: {}".format(self.t_counter))
+                    )
+            elif event.evt == EVT.ENG.INPUT:
                 msg = event.get_input()
                 self.add_object(BoxText(3, 0, "Your name is {}".format(msg)))
                 self.del_object(self.input_obj)
@@ -65,13 +65,13 @@ class SceneMain(Scene):
 
 class SceneLast(Scene):
     def setup(self):
-        self.add_object(String(0, 0, "last page"))
+        self.add_object(FlashText(0, 0, "last page", self.new_timer(50)))
 
     @update
     def update(self, *events: Event) -> List[Event]:
         event_to_return = []
         for event in events:
-            if event.evt == EVT_ENG_KEY:
+            if event.evt == EVT.ENG.KEY:
                 key = event.get_key()
                 if key is not None:
                     if key == ord("x"):

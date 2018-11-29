@@ -1,3 +1,4 @@
+from typing import List
 from sirtet.cell import Cell
 from sirtet.point import Point
 from sirtet.matrix import Mat
@@ -11,7 +12,7 @@ from sirtet.logics.roller.handler import RollerHandler
 from sirtet.logics.roller.dummy import Dummy
 from engine.nobject import Caller
 from engine.handler import Handler
-from engine.event import EVT_ENG_KEY, EVT_ENG_TIMER
+from engine.event import Event, EVT
 from engine.scene import Scene, update
 
 
@@ -41,9 +42,10 @@ class SceneSirtet(Scene):
         self.rh.start()
 
     @update
-    def update(self, *events):
+    def update(self, *events) -> List[Event]:
+        event_to_return = []
         for event in events:
-            if event.evt == EVT_ENG_KEY:
+            if event.evt == EVT.ENG.KEY:
                 key = event.get_key()
                 if key is not None:
                     if key == ord("x"):
@@ -58,8 +60,11 @@ class SceneSirtet(Scene):
                         self.rh.event_handler(Events.ROTATE_ANTICLOCK)
                     elif key == ord("s"):
                         self.rh.event_handler(Events.ROTATE_CLOCK)
-            elif event.evt == EVT_ENG_TIMER:
+            elif event.evt == EVT.ENG.TIMER:
                 self.rh.event_handler(Events.MOVE_DOWN)
+            else:
+                event_to_return.append(event)
+        return event_to_return
 
 
 def create_game() -> RollerHandler:

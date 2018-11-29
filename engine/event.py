@@ -1,13 +1,18 @@
 from typing import Optional
 
-EVT_ENG_KEY: int = 100
-EVT_ENG_TIMER: int = 200
-EVT_ENG_INPUT: int = 300
-EVT_SCN_ISCENE: int = 400
-EVT_SCN_NEXT_SCENE: int = 401
-EVT_SCN_PREV_SCENE: int = 402
-EVT_SCN_FIRST_SCENE: int = 403
-EVT_SCN_LAST_SCENE: int = 404
+
+class EVT:
+    class ENG:
+        KEY: int = 100
+        TIMER: int = 200
+        INPUT: int = 300
+
+    class SCN:
+        ISCENE: int = 400
+        NEXT_SCENE: int = 401
+        PREV_SCENE: int = 402
+        FIRST_SCENE: int = 403
+        LAST_SCENE: int = 404
 
 
 class Timer:
@@ -31,61 +36,61 @@ class Event:
         self.params = kwargs
 
     def get_key(self) -> Optional[int]:
-        if self.evt == EVT_ENG_KEY:
+        if self.evt == EVT.ENG.KEY:
             return self.params.get("key", None)
         return None
 
     def get_timer(self) -> Optional[Timer]:
-        if self.evt == EVT_ENG_TIMER:
+        if self.evt == EVT.ENG.TIMER:
             return self.params.get("timer", None)
         return None
 
     def get_input(self) -> Optional[str]:
-        if self.evt == EVT_ENG_INPUT:
+        if self.evt == EVT.ENG.INPUT:
             return self.params.get("input_str", None)
         return None
 
     def get_iscene(self) -> Optional[int]:
-        if self.evt == EVT_SCN_ISCENE:
+        if self.evt == EVT.SCN.ISCENE:
             return self.params.get("iscene", None)
         return None
 
 
 class EventKey(Event):
     def __init__(self, key: int):
-        super(EventKey, self).__init__(EVT_ENG_KEY, key=key)
+        super(EventKey, self).__init__(EVT.ENG.KEY, key=key)
 
 
 class EventTimer(Event):
     def __init__(self, t: Timer):
-        super(EventTimer, self).__init__(EVT_ENG_TIMER, timer=t)
+        super(EventTimer, self).__init__(EVT.ENG.TIMER, timer=t)
 
 
 class EventInput(Event):
     def __init__(self, data: str):
-        super(EventInput, self).__init__(EVT_ENG_INPUT, input_str=data)
+        super(EventInput, self).__init__(EVT.ENG.INPUT, input_str=data)
 
 
 class EventIScene(Event):
     def __init__(self, iscene: int):
-        super(EventIScene, self).__init__(EVT_SCN_ISCENE, iscene=iscene)
+        super(EventIScene, self).__init__(EVT.SCN.ISCENE, iscene=iscene)
 
 
 class EventNextScene(Event):
     def __init__(self):
-        super(EventNextScene, self).__init__(EVT_SCN_NEXT_SCENE)
+        super(EventNextScene, self).__init__(EVT.SCN.NEXT_SCENE)
 
 
 class EventPrevScene(Event):
     def __init__(self):
-        super(EventPrevScene, self).__init__(EVT_SCN_PREV_SCENE)
+        super(EventPrevScene, self).__init__(EVT.SCN.PREV_SCENE)
 
 
 class EventFirstScene(Event):
     def __init__(self):
-        super(EventFirstScene, self).__init__(EVT_SCN_FIRST_SCENE)
+        super(EventFirstScene, self).__init__(EVT.SCN.FIRST_SCENE)
 
 
 class EventLastScene(Event):
     def __init__(self):
-        super(EventLastScene, self).__init__(EVT_SCN_LAST_SCENE)
+        super(EventLastScene, self).__init__(EVT.SCN.LAST_SCENE)
