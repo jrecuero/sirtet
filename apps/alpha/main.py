@@ -10,9 +10,9 @@ from sirtet.assets.cells import Block as cBlock
 from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
 from sirtet.logics.roller.dummy import Dummy
-from engine.nobject import Caller
+from engine.nobject import Caller, BoxText, FlashText
 from engine.handler import Handler
-from engine.event import Event, EVT
+from engine.event import Event, EVT, KeyHandler, EventNextScene
 from engine.scene import Scene, update
 
 
@@ -25,6 +25,23 @@ class BoardText(Board):
 
     def new_cell_border(self) -> Cell:
         return cBlock(1)
+
+
+class SceneIntro(Scene):
+    def setup(self):
+        self.add_object(BoxText(0, 0, "Sirtet"))
+        self.add_object(FlashText(5, 0, "press 'c' to continue", self.new_timer(50)))
+        self.kh = KeyHandler({"x": lambda: exit(0), "c": lambda: [EventNextScene()]})
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        event_to_return: List[Event] = []
+        for event in events:
+            if event.evt == EVT.ENG.KEY:
+                event_to_return.extend(self.kh.update(event))
+            else:
+                event_to_return.append(event)
+        return event_to_return
 
 
 class SceneSirtet(Scene):
@@ -64,6 +81,21 @@ class SceneSirtet(Scene):
                 self.rh.event_handler(Events.MOVE_DOWN)
             else:
                 event_to_return.append(event)
+        if self.rh.exit_game:
+            event_to_return.append(EventNextScene())
+        return event_to_return
+
+
+class SceneGameOver(Scene):
+    def setup(self):
+        self.add_object(BoxText(0, 0, "Game Over"))
+        self.add_object(FlashText(5, 0, "press 'x' to exit", self.new_timer(50)))
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        event_to_return: List[Event] = []
+        for event in events:
+            event.exit_on_key("x")
         return event_to_return
 
 
@@ -78,7 +110,9 @@ def create_game() -> RollerHandler:
 def main():
     h = Handler()
     game = create_game()
+    h.add_scene(SceneIntro())
     h.add_scene(SceneSirtet(game))
+    h.add_scene(SceneGameOver())
     h.run()
 
 

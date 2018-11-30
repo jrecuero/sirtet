@@ -18,6 +18,7 @@ class RollerHandler:
         self.player: Dummy = None
         self.enemies: List[Dummy] = []
         self.ienemy: int = 0
+        self.exit_game = False
 
     def setup(self, board: Board, gen: Generator, start_point: Point) -> None:
         self.bhandler.setup(board, gen, start_point)
@@ -75,6 +76,10 @@ class RollerHandler:
         result.append((Events.EXIT, None))
         return result
 
+    def _exit(self):
+        # exit(0)
+        self.exit_game = True
+
     def _process_render(self) -> Result_Event:
         result: Result_Event = Result_Event([])
         return result
@@ -111,7 +116,7 @@ class RollerHandler:
         elif event == Events.GAME_OVER:
             result = self._process_game_over()
         elif event == Events.EXIT:
-            exit(0)
+            self._exit()
         else:
             assert False, "Unknown event"
         # fallback any events returned by local handlers.
