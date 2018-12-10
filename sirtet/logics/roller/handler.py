@@ -19,6 +19,7 @@ class RollerHandler:
         self.enemies: List[Dummy] = []
         self.ienemy: int = 0
         self.exit_game = False
+        self.matched_row_result: Dict[str, int] = {}
 
     def setup(self, board: Board, gen: Generator, start_point: Point) -> None:
         self.bhandler.setup(board, gen, start_point)
@@ -32,6 +33,7 @@ class RollerHandler:
         return result
 
     def _process_bottomed_piece(self, piece: Piece) -> Result_Event:
+        self.matched_row_result = {}
         result: Result_Event = Result_Event([])
         # print(piece)
         return result
@@ -68,6 +70,7 @@ class RollerHandler:
             self.ienemy += 1
             if self.ienemy == len(self.enemies):
                 result.append((Events.GAME_OVER, None))
+        self.matched_row_result = data
         return result
 
     def _process_game_over(self) -> Result_Event:

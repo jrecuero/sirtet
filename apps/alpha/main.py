@@ -55,6 +55,9 @@ class SceneSirtet(Scene):
             Caller(5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy]))
         )
         self.add_object(Caller(10, 0, self.rh.bhandler.board_to_render_ascii))
+        self.add_object(
+            Caller(30, 0, lambda: "{}\n".format(self.rh.matched_row_result))
+        )
         self.new_timer(100)
         self.rh.start()
 
