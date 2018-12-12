@@ -9,6 +9,7 @@ from sirtet.events import Events
 from sirtet.assets.cells import Block as cBlock
 from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
+from sirtet.logics.roller.jobs import Warrior
 from sirtet.logics.roller.dummy import Dummy
 from engine.nobject import Caller, BoxText, FlashText
 from engine.handler import Handler
@@ -105,7 +106,7 @@ class SceneGameOver(Scene):
 def create_game() -> RollerHandler:
     rh = RollerHandler()
     rh.setup(BoardText(), Generator(Segment), Point(0, 4))
-    rh.player = Dummy("ME", 100, 1, 100, True)
+    rh.player = Dummy("ME", 100, 1, 100, Warrior(), True)
     rh.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(2)]
     return rh
 
