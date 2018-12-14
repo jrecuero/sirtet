@@ -1,24 +1,40 @@
 from sirtet.logics.roller.jobs import Job
 
 
+class Level:
+    def __init__(self):
+        self.xp: int = 0
+        self.level: int = 1
+        self.next: int = 1
+
+    def set_next(self):
+        self.next *= 2
+
+    def add_xp(self, xp: int = 1) -> bool:
+        self.xp += xp
+        while self.xp >= self.next:
+            self.level += 1
+            self.set_next()
+        return True
+
+
+class Point(Level):
+    def __init__(self):
+        super(Point, self).__init__()
+
+    def add_xp(self, xp: int = 1) -> bool:
+        if xp > self.xp + self.next:
+            return False
+        return super(Point, self).add_xp(xp)
+
+
 class Stat:
     def __init__(self, name: str, maxi: int, init: int = -1, own: int = -1):
         self.name: str = name
         self.val: int = init if init != -1 else maxi
         self.max: int = maxi
         self.own: int = own if own != -1 else maxi
-        self.points: int = 0
-        self.next: int = 1
-        self.level: int = 0
-
-    def add_points(self, points: int = 1) -> bool:
-        if points > self.points + self.next:
-            return False
-        self.points += points
-        if self.points == self.next:
-            self.level += 1
-            self.next *= 2
-        return True
+        self.points: Point = Point()
 
 
 class Dummy:
@@ -29,7 +45,7 @@ class Dummy:
         damage: int,
         skill: int,
         job: Job = Job(),
-        player: bool = False,
+        is_player: bool = False,
     ):
         self.name: str = name
         self.description: str = ""
@@ -38,9 +54,8 @@ class Dummy:
         self.skill: Stat = Stat("skill", skill, 0)
         self.defense: Stat = Stat("defense", 0)
         self.job = job
-        self._player: bool = player
-        self.xp: int = 0
-        self.level: int = 1
+        self.is_player: bool = is_player
+        self.level: Level = Level()
 
     def get_damage(self, damage: int) -> int:
         return damage * self.job.damage * self.damage.val
@@ -79,7 +94,7 @@ class Dummy:
             self.skill.val,
             self.skill.max,
             self.job.skill,
-            chr(9784) if self._player else chr(9763),
+            chr(9784) if self.is_player else chr(9763),
             self.damage.val,
             self.job.damage,
         )
