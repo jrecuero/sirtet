@@ -22,6 +22,9 @@ class Segment(Cell):
         else:
             self._content = content.__class__()
 
+    def equal(self, other: Any) -> bool:
+        return self._content.equal(other)
+
     def match(self) -> bool:
         return self._content.match()
 

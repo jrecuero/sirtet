@@ -13,6 +13,9 @@ class Int(Cell):
         if not self.match():
             self._content = other._content
 
+    def equal(self, other: Any) -> bool:
+        return self._content == other
+
     def __str__(self) -> str:
         return str(self._content)
 

@@ -66,7 +66,7 @@ class RollerHandler:
         self.player.skilled(self.player.get_skill(data["skill"]))
         self.enemies[self.ienemy].damaged(self.player.get_damage(data["damage"]))
         self.player.damaged(self.enemies[self.ienemy].get_damage(data["outch"]))
-        if self.enemies[self.ienemy].life <= 0:
+        if self.enemies[self.ienemy].life.val <= 0:
             self.ienemy += 1
             if self.ienemy == len(self.enemies):
                 result.append((Events.GAME_OVER, None))
@@ -102,6 +102,7 @@ class RollerHandler:
             Events.MOVE_RIGHT,
             Events.ROTATE_ANTICLOCK,
             Events.ROTATE_CLOCK,
+            Events.CLEAR_FOR_CELL,
         ]:
             result = self.bhandler.event_handler(event, data)
         elif event == Events.BOTTOMED_PIECE:

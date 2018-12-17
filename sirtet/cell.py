@@ -5,6 +5,13 @@ class Cell:
     def __init__(self, content: Any):
         self._content: Any = content
 
+    @property
+    def content(self) -> Any:
+        return self._content
+
+    def equal(self, content: Any) -> bool:
+        return self._content.equal(content)
+
     def match(self) -> bool:
         return False
 

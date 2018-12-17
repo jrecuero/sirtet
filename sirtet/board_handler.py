@@ -1,5 +1,6 @@
-from typing import Tuple, Any
+from typing import Tuple, Any, cast
 from sirtet.point import Point
+from sirtet.cell import Cell
 from sirtet.board import Board
 from sirtet.matrix import Matrix
 from sirtet.piece import Piece
@@ -95,6 +96,11 @@ class BoardHandler:
         result.extend(self.new_piece_at())
         return result
 
+    def _clear_for_cell(self, cell: Any) -> Result_Event:
+        result: Result_Event = Result_Event([])
+        self.board.clear_for_cell(cast(Cell, cell))
+        return result
+
     def event_handler(self, event: Event, data: Any) -> Result_Event:
         bottomed: bool = False
         result: Result_Event = Result_Event([])
@@ -110,6 +116,8 @@ class BoardHandler:
             self.piece_rotate_anticlockwise()
         elif event == Events.RENDER_ASCII:
             result = self.render_ascii(data)
+        elif event == Events.CLEAR_FOR_CELL:
+            result = self._clear_for_cell(data)
         if bottomed:
             result.extend(self._process_bottomed())
         return result

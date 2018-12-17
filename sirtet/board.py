@@ -79,6 +79,12 @@ class Board:
             for yi, col in enumerate(row):
                 self.mat[x + xi][y + yi] = self.new_cell_empty()
 
+    def clear_for_cell(self, cell: Cell) -> None:
+        for x, row in enumerate(self.mat):
+            for y, col in enumerate(row):
+                if self.mat[x][y].equal(cell):
+                    self.mat[x][y] = self.new_cell_empty()
+
     def get_arena_for_row(self, row: List[Cell]) -> List[Cell]:
         return row[1 : self.board_width - 1]
 

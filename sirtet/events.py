@@ -17,6 +17,7 @@ class Events:
     BOTTOMED_PIECE = Event(11)
     MATCH_ROW = Event(12)
     MATCH_DAMAGE = Event(13)
+    CLEAR_FOR_CELL = Event(14)
     RENDER = Event(20)
     RENDER_ASCII = Event(21)
     GAME_OVER = Event(100)
