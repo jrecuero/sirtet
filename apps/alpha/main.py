@@ -11,7 +11,7 @@ from sirtet.logics.roller.segment import Segment
 from sirtet.logics.roller.handler import RollerHandler
 from sirtet.logics.roller.jobs import Warrior
 from sirtet.logics.roller.dummy import Dummy
-from engine.nobject import Caller, BoxText, FlashText
+from engine.nobject import Caller, BoxText, FlashText, Input, String
 from engine.handler import Handler
 from engine.event import Event, EVT, KeyHandler, EventNextScene
 from engine.scene import Scene, update
@@ -45,12 +45,49 @@ class SceneIntro(Scene):
         return event_to_return
 
 
+class SceneSelect(Scene):
+    def setup(self):
+        self.enemies_obj = Input(5, 0, "How many enemies? ")
+        self.add_object(self.enemies_obj)
+        self.timer = None
+        self.enemies_nbr: int = 0
+        self.kh = KeyHandler({"x": lambda: exit(0)})
+
+    @update
+    def update(self, *events: Event) -> List[Event]:
+        event_to_return: List[Event] = []
+        for event in events:
+            if event.evt == EVT.ENG.KEY:
+                event_to_return.extend(self.kh.update(event))
+            elif event.evt == EVT.ENG.TIMER:
+                if event.get_timer() == self.timer:
+                    event_to_return.append(EventNextScene())
+            elif event.evt == EVT.ENG.INPUT:
+                self.enemies_nbr = int(str(event.get_input()))
+                self.add_object(
+                    String(5, 0, "You will fight {} enemies".format(self.enemies_nbr))
+                )
+                self.del_object(self.enemies_obj)
+                self.enemies_obj = None
+                self.timer = self.new_timer(200)
+            else:
+                event_to_return.append(event)
+        return event_to_return
+
+
 class SceneSirtet(Scene):
-    def __init__(self, game: RollerHandler):
+    def __init__(self, game_caller, scene_select):
         super(SceneSirtet, self).__init__("Sirtet")
-        self.rh: RollerHandler = game
+        self._game_caller = game_caller
+        self._scene_select = scene_select
+        self.rh: RollerHandler = None
 
     def setup(self):
+        pass
+
+    def activate(self):
+        super(SceneSirtet, self).activate()
+        self.rh: RollerHandler = self._game_caller(self._scene_select.enemies_nbr)
         self.add_object(Caller(0, 0, lambda: "Player: {}\n".format(self.rh.player)))
         self.add_object(
             Caller(5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy]))
@@ -103,19 +140,21 @@ class SceneGameOver(Scene):
         return event_to_return
 
 
-def create_game() -> RollerHandler:
+def create_game(enemies: int = 2) -> RollerHandler:
     rh = RollerHandler()
     rh.setup(BoardText(), Generator(Segment), Point(0, 4))
     rh.player = Dummy("ME", 100, 1, 100, Warrior(), True)
-    rh.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(2)]
+    rh.enemies = [Dummy("ORC-{}".format(i), 20, 1, 10) for i in range(enemies)]
     return rh
 
 
 def main():
     h = Handler()
-    game = create_game()
+    # game = create_game()
+    scene_select = SceneSelect()
     h.add_scene(SceneIntro())
-    h.add_scene(SceneSirtet(game))
+    h.add_scene(scene_select)
+    h.add_scene(SceneSirtet(create_game, scene_select))
     h.add_scene(SceneGameOver())
     h.run()
 
