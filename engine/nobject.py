@@ -33,6 +33,7 @@ class NObject:
         self.dx: int = width
         self.enable: bool = True
         self.visible: bool = True
+        self.text_data: str = ""
 
     def activate(self):
         self.enable = True
@@ -52,24 +53,24 @@ class NObject:
 
 
 class String(NObject):
-    def __init__(self, y: int, x: int, message: str):
-        super(String, self).__init__(y, x, 1, len(message))
-        self.message = message
+    def __init__(self, y: int, x: int, text_data: str):
+        super(String, self).__init__(y, x, 1, len(text_data))
+        self.text_data = text_data
 
     @render
     def render(self, screen) -> List[Event]:
-        screen.addstr(self.y, self.x, self.message, self.dx)
+        screen.addstr(self.y, self.x, self.text_data, self.dx)
         return []
 
 
 class Block(NObject):
-    def __init__(self, y: int, x: int, block: str):
+    def __init__(self, y: int, x: int, text_data: str):
         super(Block, self).__init__(y, x, 0, 0)
-        self.block = block
+        self.text_data = text_data
 
     @render
     def render(self, screen) -> List[Event]:
-        tokens = self.block.split("\n")
+        tokens = self.text_data.split("\n")
         for y, tok in enumerate(tokens):
             screen.addstr(self.y + y, self.x, tok, len(tok))
         return []
@@ -94,10 +95,10 @@ class Box(NObject):
 
 
 class BoxText(NObject):
-    def __init__(self, y: int, x: int, message: str, dy: int = -1, dx: int = -1):
+    def __init__(self, y: int, x: int, text_data: str, dy: int = -1, dx: int = -1):
         super(BoxText, self).__init__(y, x, dy, dx)
-        self.message: str = message
-        tokens = self.message.split("\n")
+        self.text_data: str = text_data
+        tokens = self.text_data.split("\n")
         if self.dy == -1:
             self.dy = len(tokens) + 1
         if self.dx == -1:
@@ -120,7 +121,7 @@ class BoxText(NObject):
         screen.addch(self.y + self.dy, self.x, chr(9495))
         screen.addch(self.y, self.x + self.dx - 1, chr(9491))
         screen.addch(self.y + self.dy, self.x + self.dx - 1, chr(9499))
-        tokens = self.message.split("\n")
+        tokens = self.text_data.split("\n")
         for y, tok in enumerate(tokens):
             screen.addstr(self.y + 1 + y, self.x + 1, tok, len(tok))
         return []
@@ -141,16 +142,16 @@ class FlashText(String):
         for event in events:
             if event.evt == EVT.ENG.TIMER:
                 if event.get_timer() == self.__timer:
-                    if self.message == "":
+                    if self.text_data == "":
                         self.__off_counter += 1
                         if self.__off_counter == self.__off:
                             self.__off_counter = 0
-                            self.message = self.__shadow
+                            self.text_data = self.__shadow
                     else:
                         self.__on_counter += 1
                         if self.__on_counter == self.__on:
                             self.__on_counter = 0
-                            self.message = ""
+                            self.text_data = ""
         return []
 
 
@@ -165,7 +166,7 @@ class TimeUpdater(String):
         for event in events:
             if event.evt == EVT.ENG.TIMER:
                 if event.get_timer() == self.__timer:
-                    self.message = self.__caller(self.message)
+                    self.text_data = self.__caller(self.text_data)
         return []
 
 
@@ -183,14 +184,14 @@ class Caller(NObject):
 
 
 class Input(NObject):
-    def __init__(self, y: int, x: int, message: str):
-        super(Input, self).__init__(y, x, 1, len(message))
-        self.message: str = message
+    def __init__(self, y: int, x: int, text_data: str):
+        super(Input, self).__init__(y, x, 1, len(text_data))
+        self.text_data: str = text_data
         self.input_str: Optional[str] = None
 
     @render
     def render(self, screen) -> List[Event]:
-        screen.addstr(self.y, self.x, self.message, self.dx)
+        screen.addstr(self.y, self.x, self.text_data, self.dx)
         screen.nodelay(False)
         curses.echo()
         self.input_str = screen.getstr(self.y, self.x + self.dx).decode("utf-8")

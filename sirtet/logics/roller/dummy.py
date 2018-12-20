@@ -50,7 +50,7 @@ class Dummy:
         self.name: str = name
         self.description: str = ""
         self.damage: Stat = Stat("damage", damage)
-        self.life: Stat = Stat("life", life, 0)
+        self.life: Stat = Stat("life", life)
         self.skill: Stat = Stat("skill", skill, 0)
         self.defense: Stat = Stat("defense", 0)
         self.job = job

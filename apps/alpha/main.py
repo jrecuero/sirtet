@@ -81,23 +81,28 @@ class SceneSirtet(Scene):
         self._game_caller = game_caller
         self._scene_select = scene_select
         self.rh: RollerHandler = None
+        self.game_started: bool = False
 
     def setup(self):
         pass
 
     def activate(self):
         super(SceneSirtet, self).activate()
-        self.rh: RollerHandler = self._game_caller(self._scene_select.enemies_nbr)
-        self.add_object(Caller(0, 0, lambda: "Player: {}\n".format(self.rh.player)))
-        self.add_object(
-            Caller(5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy]))
-        )
-        self.add_object(Caller(10, 0, self.rh.bhandler.board_to_render_ascii))
-        self.add_object(
-            Caller(30, 0, lambda: "{}\n".format(self.rh.matched_row_result))
-        )
-        self.new_timer(100)
-        self.rh.start()
+        if not self.game_started:
+            self.rh: RollerHandler = self._game_caller(self._scene_select.enemies_nbr)
+            self.add_object(Caller(0, 0, lambda: "Player: {}\n".format(self.rh.player)))
+            self.add_object(
+                Caller(
+                    5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy])
+                )
+            )
+            self.add_object(Caller(10, 0, self.rh.bhandler.board_to_render_ascii))
+            self.add_object(
+                Caller(30, 0, lambda: "{}\n".format(self.rh.matched_row_result))
+            )
+            self.new_timer(100)
+            self.rh.start()
+        self.game_started = True
 
     @update
     def update(self, *events) -> List[Event]:
