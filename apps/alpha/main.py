@@ -90,15 +90,24 @@ class SceneSirtet(Scene):
         super(SceneSirtet, self).activate()
         if not self.game_started:
             self.rh: RollerHandler = self._game_caller(self._scene_select.enemies_nbr)
-            self.add_object(Caller(0, 0, lambda: "Player: {}\n".format(self.rh.player)))
             self.add_object(
                 Caller(
-                    5, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy])
+                    0,
+                    0,
+                    lambda: "Enemies left:: {}\n".format(
+                        len(self.rh.enemies) - self.rh.ienemy
+                    ),
                 )
             )
-            self.add_object(Caller(10, 0, self.rh.bhandler.board_to_render_ascii))
+            self.add_object(Caller(1, 0, lambda: "Player: {}\n".format(self.rh.player)))
             self.add_object(
-                Caller(30, 0, lambda: "{}\n".format(self.rh.matched_row_result))
+                Caller(
+                    6, 0, lambda: "Enemy:  {}\n".format(self.rh.enemies[self.rh.ienemy])
+                )
+            )
+            self.add_object(Caller(11, 0, self.rh.bhandler.board_to_render_ascii))
+            self.add_object(
+                Caller(31, 0, lambda: "{}\n".format(self.rh.matched_row_result))
             )
             self.new_timer(100)
             self.rh.start()

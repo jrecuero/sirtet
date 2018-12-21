@@ -62,14 +62,15 @@ class RollerHandler:
 
     def _process_match_damage(self, data: Dict) -> Result_Event:
         result: Result_Event = Result_Event([])
-        self.player.healed(self.player.get_life(data["life"]))
-        self.player.skilled(self.player.get_skill(data["skill"]))
-        self.enemies[self.ienemy].damaged(self.player.get_damage(data["damage"]))
-        self.player.damaged(self.enemies[self.ienemy].get_damage(data["outch"]))
-        if self.enemies[self.ienemy].life.val <= 0:
-            self.ienemy += 1
-            if self.ienemy == len(self.enemies):
-                result.append((Events.GAME_OVER, None))
+        if self.ienemy < len(self.enemies):
+            self.player.healed(self.player.get_life(data["life"]))
+            self.player.skilled(self.player.get_skill(data["skill"]))
+            self.enemies[self.ienemy].damaged(self.player.get_damage(data["damage"]))
+            self.player.damaged(self.enemies[self.ienemy].get_damage(data["outch"]))
+            if self.enemies[self.ienemy].life.val <= 0:
+                self.ienemy += 1
+                if self.ienemy == len(self.enemies):
+                    result.append((Events.GAME_OVER, None))
         self.matched_row_result = data
         return result
 
@@ -80,7 +81,6 @@ class RollerHandler:
         return result
 
     def _exit(self):
-        # exit(0)
         self.exit_game = True
 
     def _process_render(self) -> Result_Event:
