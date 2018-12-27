@@ -28,6 +28,7 @@ class Handler:
     def __main(self, screen: Any):
         self.screen = screen
         self.screen.nodelay(True)
+        curses.start_color()
         curses.curs_set(False)
         while True:
             self.screen.erase()

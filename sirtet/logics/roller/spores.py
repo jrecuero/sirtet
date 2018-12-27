@@ -39,7 +39,8 @@ class Damage(Spore):
         # return "1"
         # return "{}".format(chr(9852))
         # return "{0}".format(chr(9770))
-        return "{0}".format(chr(9784))
+        # return "{0}".format(chr(9784))
+        return "@"
 
 
 class Life(Spore):
@@ -49,7 +50,8 @@ class Life(Spore):
 
     def __str__(self) -> str:
         # return "2"
-        return "{}".format(chr(9825))
+        # return "{}".format(chr(9825))
+        return "H"
 
 
 class Skill(Spore):
@@ -60,7 +62,8 @@ class Skill(Spore):
     def __str__(self) -> str:
         # return "3"
         # return "{}".format(chr(9827))
-        return "{}".format(chr(9733))
+        # return "{}".format(chr(9733))
+        return "S"
 
 
 class Outch(Spore):
@@ -71,4 +74,5 @@ class Outch(Spore):
     def __str__(self) -> str:
         # return "4"
         # return "{}".format(chr(9819))
-        return "{}".format(chr(9763))
+        # return "{}".format(chr(9763))
+        return "D"

@@ -82,6 +82,7 @@ class SceneSirtet(Scene):
         self._scene_select = scene_select
         self.rh: RollerHandler = None
         self.game_started: bool = False
+        self.pause: bool = False
 
     def setup(self):
         pass
@@ -122,6 +123,8 @@ class SceneSirtet(Scene):
                 if key is not None:
                     if key == ord("x"):
                         exit(0)
+                    elif key == ord("p"):
+                        self.pause = not self.pause
                     elif key == ord(" "):
                         self.rh.event_handler(Events.MOVE_DOWN)
                     elif key == ord("k"):
@@ -133,7 +136,8 @@ class SceneSirtet(Scene):
                     elif key == ord("s"):
                         self.rh.event_handler(Events.ROTATE_CLOCK)
             elif event.evt == EVT.ENG.TIMER:
-                self.rh.event_handler(Events.MOVE_DOWN)
+                if not self.pause:
+                    self.rh.event_handler(Events.MOVE_DOWN)
             else:
                 event_to_return.append(event)
         if self.rh.exit_game:
